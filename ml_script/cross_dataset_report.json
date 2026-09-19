@@ -1,0 +1,44 @@
+{
+  "test_name": "Cross-Dataset Generalisation Test",
+  "model": "RetinaScan-XAI ResNet-50 (trained on APTOS 2019)",
+  "test_dataset": "Messidor-2",
+  "test_dataset_path": "D:\\AntiGravity projects\\SIH\\DataSet\\messidor\\IMAGES.zip\\IMAGES",
+  "total_images": 1748,
+  "failed_images": 0,
+  "grade_distribution": {
+    "Grade 0: No DR": {
+      "count": 1639,
+      "percentage": 93.76
+    },
+    "Grade 1: Mild NPDR": {
+      "count": 0,
+      "percentage": 0.0
+    },
+    "Grade 2: Moderate NPDR": {
+      "count": 0,
+      "percentage": 0.0
+    },
+    "Grade 3: Severe NPDR": {
+      "count": 109,
+      "percentage": 6.24
+    },
+    "Grade 4: Proliferative DR": {
+      "count": 0,
+      "percentage": 0.0
+    }
+  },
+  "referable_dr": {
+    "predicted_count": 109,
+    "predicted_percentage": 6.24,
+    "known_prevalence_pct": 46.5,
+    "difference_pct": 40.26
+  },
+  "confidence": {
+    "mean_pct": 98.0,
+    "median_pct": 99.98,
+    "min_pct": 48.86,
+    "max_pct": 100.0
+  },
+  "generalisation_verdict": "\u274c POOR \u2014 significant domain shift, consider fine-tuning on Messidor",
+  "note": "Messidor-2 CSV contains left/right pairings only \u2014 no per-image grade labels are available. Comparison uses published dataset-level DR prevalence (~46.5% referable) from ADCIS literature."
+}
