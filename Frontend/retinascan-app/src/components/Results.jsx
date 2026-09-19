@@ -60,6 +60,7 @@ export default function Results({
   selectedEye = 'od',
   setSelectedEye = () => {},
   heatmapUrl = '',
+  uploadedImageUrl = '',
   onQueue
 }) {
   const [isInverted, setIsInverted] = useState(false);
@@ -69,8 +70,12 @@ export default function Results({
   const currentEye = selectedEye || 'od';
   const info = SEVERITY_DETAILS[currentSeverity] || SEVERITY_DETAILS[2];
 
-  const fundusPath = `/images/img_${currentSeverity}_${currentEye}.jpg`;
-  const heatmapPath = heatmapUrl || `/images/heatmap_${currentSeverity}_${currentEye}.jpg`;
+  // Use the real uploaded image if available, else fall back to demo static image
+  const fundusPath    = uploadedImageUrl || `/images/img_${currentSeverity}_${currentEye}.jpg`;
+  // Backend Grad-CAM is a composite image (heatmap baked onto retina by OpenCV)
+  // When Grad-CAM is ON: show the real composite; when OFF: show the plain uploaded image
+  const heatmapPath   = heatmapUrl ? `http://localhost:8000${heatmapUrl}` : `/images/heatmap_${currentSeverity}_${currentEye}.jpg`;
+  const hasRealHeatmap = !!heatmapUrl;
 
   const name = patient?.fullName || patient?.name || 'Smt. Geeta Sharma';
   const confidence = patient?.confidence ?? (95 + currentSeverity * 1.1).toFixed(1);
@@ -237,25 +242,25 @@ export default function Results({
 
               {/* Viewport Box */}
               <div className="relative w-full aspect-[4/3] bg-slate-950 rounded-xl overflow-hidden select-none flex items-center justify-center group cursor-crosshair shadow-inner" id="retinaViewport">
+                {/* Base image: uploaded file OR Grad-CAM composite when heatmap is on */}
                 <img
                   alt={`Fundus Retina ${currentEye.toUpperCase()}`}
                   className="w-full h-full object-cover transition-all duration-300"
                   style={{ filter: isInverted ? 'invert(100%) contrast(140%) hue-rotate(180deg)' : 'none' }}
-                  src={fundusPath}
+                  src={heatmapVisible && hasRealHeatmap ? heatmapPath : fundusPath}
                   onError={(e) => {
-                    e.target.src = '/images/img_2_od.jpg';
+                    // fallback if either URL fails
+                    e.target.src = `/images/img_${currentSeverity}_od.jpg`;
                   }}
                 />
 
-                {/* Heatmap Overlay */}
-                {heatmapVisible && (
+                {/* Static heatmap overlay — only used when no real backend heatmap exists */}
+                {heatmapVisible && !hasRealHeatmap && (
                   <img
-                    src={heatmapPath}
+                    src={`/images/heatmap_${currentSeverity}_${currentEye}.jpg`}
                     alt="Grad-CAM Heatmap"
                     className="absolute inset-0 w-full h-full object-cover mix-blend-screen opacity-75 pointer-events-none transition-opacity duration-300"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
+                    onError={(e) => { e.target.style.display = 'none'; }}
                   />
                 )}
 
