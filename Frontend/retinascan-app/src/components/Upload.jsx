@@ -1,212 +1,311 @@
 import React, { useState } from 'react';
+import { demoPresets, severityColors } from '../data.js';
 
-const PRESETS = [
-  {
-    key: 'P0', idx: 0,
-    name: 'Priya S.', sub: 'PHC Mandawar · 34F',
-    level: 'Level 0 — Healthy', severity: 0,
-    badge: 'No DR', badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    dot: 'bg-emerald-500',
-    conf: '98.7%',
-  },
-  {
-    key: 'A1', idx: 1,
-    name: 'Arjun M.', sub: 'Kishangarh SC · 49M',
-    level: 'Level 1 — Mild NPDR', severity: 1,
-    badge: 'Mild', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200',
-    dot: 'bg-amber-500',
-    conf: '89.1%',
-  },
-  {
-    key: 'G2', idx: 2,
-    name: 'Geeta S.', sub: 'Alwar District · 58F',
-    level: 'Level 2 — Moderate NPDR', severity: 2,
-    badge: 'Moderate', badgeColor: 'bg-orange-50 text-orange-700 border-orange-200',
-    dot: 'bg-orange-500',
-    conf: '96.4%',
-    star: true,
-  },
-  {
-    key: 'K3', idx: 3,
-    name: 'Kiran D.', sub: 'Behror Mobile Unit · 71F',
-    level: 'Level 3 — Severe NPDR', severity: 3,
-    badge: 'Severe', badgeColor: 'bg-red-50 text-red-700 border-red-200',
-    dot: 'bg-red-500',
-    conf: '97.9%',
-  },
-];
+const D = {
+  bg:    '#0a0f14', panel: '#111820', border: '#1e2d3d',
+  teal:  '#00d4aa', text: '#e8f4f8', sub: '#7a9ab0', muted: '#3a5068',
+  mono:  'JetBrains Mono, "Courier New", monospace',
+};
+
+const SEVERITY_LABELS = ['No DR', 'Mild NPDR', 'Moderate NPDR', 'Severe NPDR', 'Prolif. DR'];
+const SEVERITY_COLORS = ['#22c55e', '#84cc16', '#f59e0b', '#ea580c', '#dc2626'];
+
+/* Auto-generate PHC ID */
+function genId() {
+  return `PHC-MNW-${String(Math.floor(1000 + Math.random() * 9000))}`;
+}
+
+function Field({ label, value, onChange, type = 'text', readOnly = false, unit, options }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+      <label style={{ fontFamily: D.mono, fontSize: 10, color: D.muted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+        {label}
+      </label>
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        {options ? (
+          <select value={value} onChange={e => onChange(e.target.value)} style={{
+            width: '100%', padding: '9px 12px',
+            background: readOnly ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.05)',
+            border: `1px solid ${D.border}`, borderRadius: 7,
+            color: D.text, fontFamily: D.mono, fontSize: 12, outline: 'none',
+            appearance: 'none',
+          }}>
+            {options.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        ) : (
+          <input
+            type={type} value={value}
+            onChange={e => onChange && onChange(e.target.value)}
+            readOnly={readOnly}
+            style={{
+              width: '100%', padding: '9px 12px',
+              background: readOnly ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.05)',
+              border: `1px solid ${readOnly ? D.border : '#2a4055'}`,
+              borderRadius: 7, color: readOnly ? D.sub : D.text,
+              fontFamily: D.mono, fontSize: 12, outline: 'none', boxSizing: 'border-box',
+            }}
+            onFocus={e => { if (!readOnly) e.target.style.borderColor = 'rgba(0,212,170,0.5)'; }}
+            onBlur={e => { e.target.style.borderColor = readOnly ? D.border : '#2a4055'; }}
+          />
+        )}
+        {unit && (
+          <span style={{
+            position: 'absolute', right: 10,
+            fontFamily: D.mono, fontSize: 10, color: D.muted,
+          }}>{unit}</span>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function Upload({ navigate, onSelectPatient, handleUpload }) {
-  const [selected, setSelected] = useState(2);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [patId] = useState(genId());
+  const [form, setForm] = useState({
+    name: '', age: '', gender: 'Female', diabetesDuration: '', hba1c: '', eye: 'od',
+  });
   const [dragOver, setDragOver] = useState(false);
-  const fileInputRef = React.useRef(null);
 
-  function handleStart(presetIdx) {
-    const p = PRESETS[presetIdx ?? selected];
-    onSelectPatient(p);
-    navigate('processing');
+  function selectPreset(p) {
+    setSelectedPatient(p);
+    setForm({
+      name: p.fullName || p.name,
+      age: String(p.age),
+      gender: p.gender === 'M' ? 'Male' : 'Female',
+      diabetesDuration: String(p.diabetesDuration || ''),
+      hba1c: String(p.hba1c || ''),
+      eye: 'od',
+    });
+    if (onSelectPatient) onSelectPatient({ ...p, selectedEye: 'od' });
   }
 
-  function onFileChange(e) {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (handleUpload) handleUpload(file);
-      else handleStart();
-    }
+  function handleStart() {
+    if (!selectedPatient) return;
+    if (onSelectPatient) onSelectPatient({ ...selectedPatient, selectedEye: form.eye });
+    navigate('qualitycheck');
   }
 
-  function handleDrop(e) {
-    e.preventDefault();
-    setDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      if (handleUpload) handleUpload(file);
-      else handleStart();
-    }
-  }
+  const canStart = !!selectedPatient;
 
   return (
-    <main className="min-h-screen pt-14 bg-[#F8FAFC]">
-      <div className="max-w-5xl mx-auto px-6 py-10">
+    <div style={{
+      minHeight: '100vh', background: D.bg, color: D.text,
+      fontFamily: 'Inter, system-ui, sans-serif', display: 'flex', flexDirection: 'column',
+    }}>
 
-        {/* Page header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('home')}
-              className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 font-medium transition-colors cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-              Back
-            </button>
-            <div className="h-4 w-px bg-slate-200"></div>
-            <div>
-              <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Patient Intake</h1>
-              <p className="text-xs text-slate-400 mt-0.5">Upload fundus image or select a demo preset</p>
+      {/* Title bar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 14,
+        padding: '8px 20px', background: D.panel, borderBottom: `1px solid ${D.border}`,
+        flexShrink: 0,
+      }}>
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e' }} />
+        <span style={{ fontFamily: D.mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: D.text }}>
+          POINT-OF-CARE ACQUISITION · PATIENT INTAKE
+        </span>
+        <span style={{ padding: '3px 10px', borderRadius: 5, background: 'rgba(255,255,255,0.05)', border: `1px solid ${D.border}`, fontFamily: D.mono, fontSize: 10, color: D.sub }}>
+          PHC Mandawar · Alwar District, Rajasthan
+        </span>
+        <div style={{ flex: 1 }} />
+        <button onClick={() => navigate('home')} style={{
+          all: 'unset', cursor: 'pointer', padding: '5px 12px', borderRadius: 6,
+          background: 'rgba(255,255,255,0.04)', border: `1px solid ${D.border}`,
+          fontFamily: D.mono, fontSize: 10, color: D.sub,
+        }}>← Home</button>
+      </div>
+
+      <div style={{ display: 'flex', flex: 1, overflow: 'auto' }}>
+
+        {/* ════ LEFT: Intake form ════ */}
+        <div style={{
+          flex: '0 0 420px', padding: '28px 28px',
+          borderRight: `1px solid ${D.border}`,
+          display: 'flex', flexDirection: 'column', gap: 20,
+        }}>
+          <div>
+            <h2 style={{ margin: '0 0 4px', fontFamily: 'Manrope, sans-serif', fontSize: 18, fontWeight: 800, color: D.text, letterSpacing: '-0.01em' }}>
+              Patient Registration
+            </h2>
+            <p style={{ margin: 0, fontFamily: D.mono, fontSize: 11, color: D.muted }}>Select a demo patient, then verify or edit fields</p>
+          </div>
+
+          {/* Auto ID */}
+          <div style={{ padding: '10px 14px', background: 'rgba(0,212,170,0.06)', border: '1px solid rgba(0,212,170,0.2)', borderRadius: 8 }}>
+            <div style={{ fontFamily: D.mono, fontSize: 9, color: D.teal, letterSpacing: '0.1em', marginBottom: 4 }}>AUTO-GENERATED PATIENT ID</div>
+            <div style={{ fontFamily: D.mono, fontSize: 16, fontWeight: 800, color: D.teal }}>{selectedPatient?.id || patId}</div>
+          </div>
+
+          {/* Form fields */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <Field label="Patient Full Name"    value={form.name}             onChange={v => setForm(f => ({ ...f, name: v }))} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <Field label="Age (years)"        value={form.age}              onChange={v => setForm(f => ({ ...f, age: v }))}              type="number" />
+              <Field label="Gender"             value={form.gender}           onChange={v => setForm(f => ({ ...f, gender: v }))}            options={['Female', 'Male', 'Other']} />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <Field label="Diabetes Duration"  value={form.diabetesDuration} onChange={v => setForm(f => ({ ...f, diabetesDuration: v }))} type="number" unit="yrs" />
+              <Field label="HbA1c"              value={form.hba1c}            onChange={v => setForm(f => ({ ...f, hba1c: v }))}            type="number" unit="%" />
             </div>
           </div>
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-xs text-slate-500 font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
-            Camera Ready · Non-Mydriatic OD/OS
+
+          {/* Eye selector */}
+          <div>
+            <div style={{ fontFamily: D.mono, fontSize: 10, color: D.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+              Select Eye for Screening
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              {[
+                { key: 'od', label: 'OD', sub: 'Right Eye (Oculus Dexter)' },
+                { key: 'os', label: 'OS', sub: 'Left Eye (Oculus Sinister)' },
+                { key: 'both', label: 'BOTH', sub: 'Bilateral Screening' },
+              ].map(e => (
+                <button key={e.key} onClick={() => setForm(f => ({ ...f, eye: e.key }))} style={{
+                  all: 'unset', cursor: 'pointer', flex: 1,
+                  padding: '10px 8px', borderRadius: 8, textAlign: 'center',
+                  background: form.eye === e.key ? 'rgba(0,212,170,0.12)' : 'rgba(255,255,255,0.03)',
+                  border: `1px solid ${form.eye === e.key ? 'rgba(0,212,170,0.4)' : D.border}`,
+                }}>
+                  <div style={{ fontFamily: D.mono, fontSize: 14, fontWeight: 800, color: form.eye === e.key ? D.teal : D.sub }}>{e.label}</div>
+                  <div style={{ fontFamily: D.mono, fontSize: 9, color: D.muted, marginTop: 3 }}>{e.sub}</div>
+                </button>
+              ))}
+            </div>
           </div>
+
+          {/* Start button */}
+          <button
+            onClick={handleStart}
+            disabled={!canStart}
+            style={{
+              all: 'unset', cursor: canStart ? 'pointer' : 'not-allowed',
+              padding: '14px 20px', borderRadius: 10, textAlign: 'center',
+              background: canStart ? 'rgba(0,212,170,0.2)' : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${canStart ? 'rgba(0,212,170,0.5)' : D.border}`,
+              fontFamily: D.mono, fontSize: 13, fontWeight: 700,
+              color: canStart ? D.teal : D.muted,
+              transition: 'all 0.15s',
+            }}
+          >
+            {canStart ? '▶ Start Image Quality Assessment' : '← Select a patient to begin'}
+          </button>
+
+          {canStart && (
+            <div style={{ fontFamily: D.mono, fontSize: 10, color: D.muted, textAlign: 'center' }}>
+              IQA → DeepRetina-v4 inference → Grad-CAM++ XAI
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-
-          {/* Left: Drop zone */}
-          <div className="lg:col-span-3 flex flex-col gap-4">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={onFileChange}
-              accept=".jpg,.jpeg,.png,.dcm,.dicom"
-              className="hidden"
-            />
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={handleDrop}
-              className={`relative w-full min-h-[260px] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all duration-200 ${
-                dragOver
-                  ? 'border-[#0B5563] bg-teal-50 scale-[1.01]'
-                  : 'border-slate-200 bg-white hover:border-teal-400 hover:bg-teal-50/30'
-              }`}
-            >
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-colors ${dragOver ? 'bg-[#0B5563]' : 'bg-slate-100'}`}>
-                <span className={`material-symbols-outlined text-[28px] transition-colors ${dragOver ? 'text-white' : 'text-slate-400'}`}>
-                  {dragOver ? 'download' : 'cloud_upload'}
-                </span>
-              </div>
-              <p className="text-[15px] font-semibold text-slate-800 mb-1">
-                {dragOver ? 'Drop to upload' : 'Drag & drop fundus image'}
-              </p>
-              <p className="text-xs text-slate-400 mb-4">
-                or <span className="text-[#0B5563] font-semibold">click to browse</span> from device / USB
-              </p>
-              <div className="flex items-center gap-2">
-                {['.DICOM', '.JPG', '.PNG'].map(f => (
-                  <span key={f} className="px-2.5 py-1 text-[10px] font-mono font-semibold bg-slate-100 text-slate-500 rounded-md border border-slate-200">{f}</span>
-                ))}
-              </div>
-              {/* Selected indicator */}
-              <div className="mt-5 flex items-center gap-2 px-4 py-2 rounded-xl bg-teal-50 border border-teal-100">
-                <span className="material-symbols-outlined text-teal-600 text-[16px]">check_circle</span>
-                <span className="text-xs font-mono text-teal-800 font-semibold">
-                  Selected preset: OD_Fundus_{PRESETS[selected].key}_Case8821.dcm
-                </span>
-              </div>
-            </div>
-
-            {/* Run analysis button */}
-            <button
-              onClick={() => handleStart()}
-              className="w-full flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-[#0B5563] hover:bg-[#08404a] text-white text-base font-bold shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-[22px]" style={{fontVariationSettings:"'FILL' 1"}}>play_circle</span>
-              Run AI Analysis
-              <span className="material-symbols-outlined text-[18px] opacity-70">arrow_forward</span>
-            </button>
-
-            {/* Bottom trust strip */}
-            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 px-1">
-              <span className="flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[14px] text-[#0B5563]">shield</span>
-                Zero-Knowledge On-Device
-              </span>
-              <span>·</span>
-              <span>DICOM Tag Anonymization: Active</span>
-              <span className="ml-auto font-mono text-slate-300">SESSION #DR-2025-0841</span>
-            </div>
+        {/* ════ RIGHT: Demo patient selector ════ */}
+        <div style={{ flex: 1, padding: '28px 28px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div>
+            <h2 style={{ margin: '0 0 4px', fontFamily: 'Manrope, sans-serif', fontSize: 18, fontWeight: 800, color: D.text, letterSpacing: '-0.01em' }}>
+              Demo Patients
+            </h2>
+            <p style={{ margin: 0, fontFamily: D.mono, fontSize: 11, color: D.muted }}>Click any patient to auto-fill the intake form</p>
           </div>
 
-          {/* Right: Preset patients */}
-          <div className="lg:col-span-2 flex flex-col gap-3">
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">Demo Presets</p>
-              <span className="text-[11px] text-slate-400">Click to select + run</span>
+          {/* Patient preset cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {demoPresets.map(p => {
+              const sCol = SEVERITY_COLORS[p.severity] || '#22c55e';
+              const isSelected = selectedPatient?.id === p.id;
+              return (
+                <button key={p.id} onClick={() => selectPreset(p)} style={{
+                  all: 'unset', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 16,
+                  padding: '16px 18px', borderRadius: 12,
+                  background: isSelected ? `${sCol}12` : 'rgba(255,255,255,0.03)',
+                  border: `1px solid ${isSelected ? sCol + '60' : D.border}`,
+                  borderLeft: `4px solid ${sCol}`,
+                  transition: 'all 0.15s',
+                }}>
+                  {/* Retina thumbnail */}
+                  <div style={{
+                    width: 60, height: 60, borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
+                    border: `2px solid ${sCol}50`,
+                    boxShadow: isSelected ? `0 0 12px ${sCol}40` : 'none',
+                  }}>
+                    <img
+                      src={`/images/img_${p.severity}_od.jpg`}
+                      alt={p.fullName}
+                      onError={e => { e.target.src = '/images/img_2_od.jpg'; }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ flex: 1, textAlign: 'left' }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: D.text, marginBottom: 3 }}>
+                      {p.fullName || p.name}
+                    </div>
+                    <div style={{ fontFamily: D.mono, fontSize: 10, color: D.sub, marginBottom: 6 }}>
+                      {p.age}Y · {p.gender === 'F' ? 'Female' : 'Male'} · {p.village}
+                    </div>
+                    <div style={{ fontFamily: D.mono, fontSize: 10, color: D.muted }}>
+                      {p.findings}
+                    </div>
+                  </div>
+
+                  {/* Grade badge */}
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      padding: '4px 10px', borderRadius: 6,
+                      background: `${sCol}18`, border: `1px solid ${sCol}40`,
+                      fontFamily: D.mono, fontSize: 11, fontWeight: 700, color: sCol,
+                      marginBottom: 5,
+                    }}>
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: sCol }} />
+                      Level {p.severity}
+                    </div>
+                    <div style={{ fontFamily: D.mono, fontSize: 10, color: D.muted }}>{p.confidence}% conf.</div>
+                  </div>
+
+                  {isSelected && (
+                    <span style={{ fontFamily: D.mono, fontSize: 10, fontWeight: 700, color: D.teal }}>✓ SELECTED</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Drop zone */}
+          <div
+            onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={e => {
+              e.preventDefault(); setDragOver(false);
+              const file = e.dataTransfer.files[0];
+              if (file && handleUpload) handleUpload(file);
+            }}
+            style={{
+              padding: '24px 20px', borderRadius: 12, textAlign: 'center',
+              border: `2px dashed ${dragOver ? D.teal : D.border}`,
+              background: dragOver ? 'rgba(0,212,170,0.06)' : 'rgba(255,255,255,0.02)',
+              transition: 'all 0.15s',
+            }}
+          >
+            <div style={{ fontFamily: D.mono, fontSize: 11, color: D.muted, marginBottom: 6 }}>
+              Or drop a real fundus image here to run live inference
             </div>
-            {PRESETS.map((p) => (
-              <button
-                key={p.key}
-                onClick={() => { setSelected(p.idx); handleStart(p.idx); }}
-                className={`w-full flex items-center gap-4 p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer group ${
-                  selected === p.idx
-                    ? 'border-[#0B5563] bg-white shadow-md ring-2 ring-[#0B5563]/10'
-                    : 'border-slate-100 bg-white hover:border-slate-200 hover:shadow-sm'
-                }`}
-              >
-                {/* Avatar dot */}
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${
-                  selected === p.idx ? 'bg-[#0B5563] text-white' : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
-                }`}>
-                  {p.key}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-slate-900">
-                      {p.name}{p.star ? ' ★' : ''}
-                    </span>
-                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${p.badgeColor}`}>{p.badge}</span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 mt-0.5 font-mono">{p.sub}</p>
-                  <div className="flex items-center gap-1.5 mt-1">
-                    <span className={`w-1.5 h-1.5 rounded-full ${p.dot}`}></span>
-                    <span className="text-[11px] text-slate-500">{p.level}</span>
-                    <span className="ml-auto text-[11px] font-mono text-slate-400">AI: {p.conf}</span>
-                  </div>
-                </div>
-              </button>
-            ))}
-
-            {/* Hint */}
-            <p className="text-[11px] text-slate-400 text-center pt-1">
-              ★ Geeta S. is the recommended demo patient (Moderate NPDR)
-            </p>
+            <div style={{ fontFamily: D.mono, fontSize: 10, color: D.muted }}>
+              JPG · PNG · TIFF · DICOM supported
+            </div>
+            <label style={{
+              display: 'inline-block', marginTop: 12,
+              padding: '7px 18px', borderRadius: 7,
+              background: 'rgba(255,255,255,0.05)', border: `1px solid ${D.border}`,
+              fontFamily: D.mono, fontSize: 11, color: D.sub, cursor: 'pointer',
+            }}>
+              Browse File
+              <input type="file" accept=".jpg,.jpeg,.png,.tiff,.dcm" style={{ display: 'none' }}
+                onChange={e => { const f = e.target.files[0]; if (f && handleUpload) handleUpload(f); }} />
+            </label>
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

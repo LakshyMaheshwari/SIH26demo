@@ -1,120 +1,224 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+const D = {
+  bg:    '#0a0f14', panel: '#111820', border: '#1e2d3d',
+  teal:  '#00d4aa', text: '#e8f4f8', sub: '#7a9ab0', muted: '#3a5068',
+  mono:  'JetBrains Mono, "Courier New", monospace',
+};
 
 const STEPS = [
-  { icon: 'upload_file',    label: 'Loading Fundus Image',           sub: 'DICOM packet verified & decompressed' },
-  { icon: 'psychology',     label: 'Running DeepRetina-v4 Inference', sub: 'ResNet-152 edge model executing on-device' },
-  { icon: 'hub',            label: 'Generating Grad-CAM++ Heatmap',   sub: 'XAI saliency map rendering complete' },
+  { key: 'dicom',   label: 'Loading DICOM packet',             sub: 'Ben Graham normalization · 512×512',        ms: 900  },
+  { key: 'infer',   label: 'Running DeepRetina-v4 inference',  sub: 'ResNet-50 · APTOS 2019 fine-tune',          ms: 1200 },
+  { key: 'gradcam', label: 'Generating Grad-CAM++ heatmap',    sub: 'Layer4 · Eigen-CAM weighted overlay',       ms: 700  },
 ];
 
+const KEYFRAMES = `
+  @keyframes spin-conic {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes ring-pulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50%       { opacity: 0.6; transform: scale(1.04); }
+  }
+  @keyframes proc-fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes step-pop {
+    0%   { opacity: 0; transform: translateX(-8px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes dot-blink {
+    0%, 80%, 100% { opacity: 0.3; }
+    40%           { opacity: 1; }
+  }
+`;
+
 export default function Processing({ navigate, patient }) {
-  const [step, setStep] = useState(0);
-  const [done, setDone] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const [doneSteps,  setDoneSteps]  = useState([]);
+  const [progress,   setProgress]   = useState(0); // 0..100
+
+  const patName = patient?.fullName || patient?.name || 'Loading patient…';
 
   useEffect(() => {
-    const t1 = setTimeout(() => setStep(1), 800);
-    const t2 = setTimeout(() => setStep(2), 1600);
-    const t3 = setTimeout(() => { setDone(true); }, 2500);
-    const t4 = setTimeout(() => navigate('results'), 2800);
-    return () => [t1, t2, t3, t4].forEach(clearTimeout);
-  }, []);
+    const id = 'proc-kf';
+    if (!document.getElementById(id)) {
+      const s = document.createElement('style'); s.id = id; s.textContent = KEYFRAMES;
+      document.head.appendChild(s);
+    }
 
-  const progress = done ? 100 : Math.round((step / STEPS.length) * 100);
+    let stepIdx = 0;
+    let elapsed = 0;
+    const totalMs = STEPS.reduce((s, st) => s + st.ms, 0);
+    const timers = [];
+
+    function advanceStep(i) {
+      if (i >= STEPS.length) return;
+      setActiveStep(i);
+      timers.push(setTimeout(() => {
+        setDoneSteps(d => [...d, i]);
+        elapsed += STEPS[i].ms;
+        setProgress(Math.round((elapsed / totalMs) * 100));
+        advanceStep(i + 1);
+      }, STEPS[i].ms));
+    }
+
+    advanceStep(0);
+
+    // Auto-navigate
+    const totalDelay = totalMs + 500;
+    timers.push(setTimeout(() => {
+      setProgress(100);
+      setTimeout(() => navigate('results'), 400);
+    }, totalDelay));
+
+    return () => timers.forEach(t => clearTimeout(t));
+  }, [navigate]);
+
+  const pct = Math.round(((doneSteps.length) / STEPS.length) * 100);
+  const currentStep = STEPS[Math.min(activeStep, STEPS.length - 1)];
 
   return (
-    <main className="w-full min-h-screen flex items-center justify-center bg-slate-950 pt-0">
-      <div className="w-full max-w-xl mx-auto px-8 py-16 flex flex-col items-center">
+    <div style={{
+      minHeight: '100vh', background: D.bg, color: D.text,
+      fontFamily: 'Inter, system-ui, sans-serif',
+      display: 'flex', flexDirection: 'column',
+    }}>
+      {/* Title bar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '8px 20px', background: D.panel, borderBottom: `1px solid ${D.border}`,
+        flexShrink: 0,
+      }}>
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 6px #f59e0b', animation: 'ring-pulse 1.2s infinite' }} />
+        <span style={{ fontFamily: D.mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: D.text }}>
+          DEEPRETINA-v4 · INFERENCE PIPELINE
+        </span>
+        <span style={{ fontFamily: D.mono, fontSize: 10, color: D.muted }}>
+          Patient: <strong style={{ color: D.sub }}>{patName}</strong>
+        </span>
+        <div style={{ flex: 1 }} />
+        <span style={{ fontFamily: D.mono, fontSize: 10, color: D.muted }}>
+          Remidio FOP NM · Offline · Buffer 32MB
+        </span>
+      </div>
 
-        {/* Spinner */}
-        <div className="relative w-28 h-28 flex items-center justify-center mb-10">
-          {/* Outer ring */}
-          <div className="absolute inset-0 rounded-full border-2 border-slate-800"></div>
-          {/* Spinning arc */}
-          <div className="animate-spin-slow absolute inset-0 rounded-full border-2 border-transparent border-t-teal-400 border-r-teal-400/30"></div>
-          {/* Inner icon */}
-          <div className="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center border border-slate-700">
-            <span
-              className="material-symbols-outlined text-teal-400 text-[28px]"
-              style={{fontVariationSettings: done ? "'FILL' 1" : "'FILL' 0"}}
-            >
-              {done ? 'check_circle' : 'biotech'}
-            </span>
-          </div>
-        </div>
+      {/* Center content */}
+      <div style={{
+        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        animation: 'proc-fade-up 0.3s ease both',
+      }}>
+        <div style={{ width: 520, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 40 }}>
 
-        {/* Status text */}
-        <h1 className="text-2xl font-bold text-white text-center mb-2 tracking-tight">
-          {done ? 'Analysis Complete' : 'Analysing Fundus Image…'}
-        </h1>
-        <p className="text-sm text-slate-400 text-center mb-10 font-mono">
-          {patient ? `${patient.name} · ICDR Level ${patient.severity ?? '?'}` : 'DeepRetina-v4 running on-device'}
-        </p>
-
-        {/* Steps */}
-        <div className="w-full flex flex-col gap-3 mb-8">
-          {STEPS.map((s, i) => {
-            const isActive = i === step && !done;
-            const isDone   = i < step || done;
-            return (
-              <div
-                key={i}
-                className={`flex items-center gap-4 px-5 py-4 rounded-xl border transition-all duration-500 ${
-                  isDone
-                    ? 'bg-teal-950/60 border-teal-800/50'
-                    : isActive
-                    ? 'bg-slate-900 border-slate-700 ring-1 ring-teal-500/30'
-                    : 'bg-slate-900/40 border-slate-800/50 opacity-40'
-                }`}
-              >
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                  isDone ? 'bg-teal-500/20' : isActive ? 'bg-slate-800' : 'bg-slate-900'
-                }`}>
-                  {isDone
-                    ? <span className="material-symbols-outlined text-teal-400 text-[18px]" style={{fontVariationSettings:"'FILL' 1"}}>check</span>
-                    : isActive
-                    ? <span className="material-symbols-outlined text-teal-400 text-[18px] animate-pulse">{s.icon}</span>
-                    : <span className="material-symbols-outlined text-slate-600 text-[18px]">{s.icon}</span>
-                  }
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold ${isDone || isActive ? 'text-white' : 'text-slate-600'}`}>{s.label}</p>
-                  <p className="text-[11px] text-slate-500 font-mono mt-0.5">{s.sub}</p>
-                </div>
-                {isActive && (
-                  <div className="flex items-center gap-1">
-                    {[0, 150, 300].map(d => (
-                      <span
-                        key={d}
-                        className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-bounce"
-                        style={{animationDelay: `${d}ms`}}
-                      ></span>
-                    ))}
-                  </div>
-                )}
+          {/* Pulsating ring + conic sweep */}
+          <div style={{ position: 'relative', width: 140, height: 140 }}>
+            {/* Outer glow ring */}
+            <div style={{
+              position: 'absolute', inset: -12, borderRadius: '50%',
+              border: '2px solid rgba(0,212,170,0.15)',
+              animation: 'ring-pulse 2s infinite',
+            }} />
+            {/* Conic-gradient spinning ring */}
+            <div style={{
+              position: 'absolute', inset: 0, borderRadius: '50%',
+              background: `conic-gradient(${D.teal} 0%, #f97316 ${pct}%, transparent ${pct}%)`,
+              animation: 'spin-conic 2s linear infinite',
+              opacity: 0.9,
+            }} />
+            {/* Inner white mask */}
+            <div style={{
+              position: 'absolute', inset: 10, borderRadius: '50%',
+              background: D.bg,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <div style={{ fontFamily: D.mono, fontSize: 26, fontWeight: 800, color: D.teal, lineHeight: 1 }}>
+                {pct}%
               </div>
-            );
-          })}
-        </div>
-
-        {/* Progress bar */}
-        <div className="w-full">
-          <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-teal-400 rounded-full transition-all duration-700"
-              style={{ width: `${progress}%` }}
-            ></div>
+              <div style={{ fontFamily: D.mono, fontSize: 9, color: D.muted, marginTop: 4, letterSpacing: '0.08em' }}>
+                INFERENCE
+              </div>
+            </div>
           </div>
-          <div className="flex justify-between text-[11px] font-mono text-slate-500 mt-2">
-            <span>Inference pipeline</span>
-            <span className={done ? 'text-teal-400' : 'text-slate-400'}>{progress}% complete</span>
-          </div>
-        </div>
 
-        {/* Device info */}
-        <div className="mt-8 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800">
-          <span className="material-symbols-outlined text-slate-500 text-[16px]">tablet_android</span>
-          <span className="text-[11px] font-mono text-slate-500">Remidio FOP NM · Bundi-04 PHC · Offline Buffer: 32 MB</span>
+          {/* Checklist steps */}
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {STEPS.map((step, idx) => {
+              const isDone   = doneSteps.includes(idx);
+              const isActive = activeStep === idx && !isDone;
+              return (
+                <div key={step.key} style={{
+                  display: 'flex', alignItems: 'center', gap: 14,
+                  padding: '14px 18px', borderRadius: 10,
+                  background: isDone  ? 'rgba(0,212,170,0.06)'
+                            : isActive ? 'rgba(255,255,255,0.05)'
+                            : 'rgba(255,255,255,0.02)',
+                  border: `1px solid ${isDone ? 'rgba(0,212,170,0.2)' : isActive ? 'rgba(255,255,255,0.1)' : D.border}`,
+                  transition: 'all 0.25s',
+                  animation: isActive ? 'step-pop 0.2s ease both' : 'none',
+                }}>
+                  {/* Status icon */}
+                  <span style={{
+                    width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 13,
+                    background: isDone  ? 'rgba(0,212,170,0.2)'
+                              : isActive ? 'rgba(245,158,11,0.15)'
+                              : 'rgba(255,255,255,0.04)',
+                    border: `1.5px solid ${isDone ? D.teal : isActive ? '#f59e0b' : D.border}`,
+                    color: isDone ? D.teal : isActive ? '#f59e0b' : D.muted,
+                  }}>
+                    {isDone ? '✓' : isActive ? '⟳' : '○'}
+                  </span>
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontSize: 13, fontWeight: isDone || isActive ? 700 : 400,
+                      color: isDone ? D.text : isActive ? D.text : D.sub,
+                      display: 'flex', alignItems: 'center', gap: 8,
+                    }}>
+                      {step.label}
+                      {isActive && (
+                        <span style={{ display: 'flex', gap: 3 }}>
+                          {[0, 1, 2].map(i => (
+                            <span key={i} style={{
+                              width: 4, height: 4, borderRadius: '50%', background: '#f59e0b',
+                              animation: `dot-blink 1.2s ${i * 0.2}s infinite`,
+                              display: 'inline-block',
+                            }} />
+                          ))}
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontFamily: D.mono, fontSize: 10, color: D.muted, marginTop: 3 }}>{step.sub}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Bottom progress bar */}
+          <div style={{ width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ fontFamily: D.mono, fontSize: 10, color: D.muted }}>Inference pipeline</span>
+              <span style={{ fontFamily: D.mono, fontSize: 10, color: D.teal, fontWeight: 700 }}>{pct}% complete</span>
+            </div>
+            <div style={{ height: 4, background: 'rgba(255,255,255,0.07)', borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{
+                height: '100%',
+                width: `${pct}%`,
+                background: `linear-gradient(90deg, ${D.teal}, #22d3ee)`,
+                borderRadius: 2,
+                transition: 'width 0.5s ease',
+                boxShadow: `0 0 8px ${D.teal}60`,
+              }} />
+            </div>
+            <div style={{ fontFamily: D.mono, fontSize: 10, color: D.muted, marginTop: 8, textAlign: 'center' }}>
+              ResNet-50 · APTOS 2019 · Grad-CAM++ XAI · FHIR R4 Ready
+            </div>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

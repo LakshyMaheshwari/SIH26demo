@@ -1,57 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+  lesionsBySeverity,
+  lesionTypes,
+  getProbabilityDistribution,
+  getLesionRegion,
+  severityColors,
+} from '../data.js';
 
-const SEVERITY_DETAILS = {
-  0: {
-    title: "No Apparent DR (ICDR Level 0)",
-    category: "Healthy Fundus",
-    description: "No diabetic retinopathy lesions detected. Clean vitreous and healthy macular architecture.",
-    color: "emerald",
-    bg: "bg-emerald-600",
-    bannerBg: "bg-emerald-50 border-emerald-200 text-emerald-900",
-    badge: "bg-emerald-100 text-emerald-800",
-    action: "Routine Annual Screening",
-  },
-  1: {
-    title: "Mild NPDR (ICDR Level 1)",
-    category: "Microaneurysms Only",
-    description: "Isolated microaneurysms detected in peripheral quadrants. No macular edema or hard exudates.",
-    color: "amber",
-    bg: "bg-amber-600",
-    bannerBg: "bg-amber-50 border-amber-200 text-amber-900",
-    badge: "bg-amber-100 text-amber-800",
-    action: "Review in 6–12 Months",
-  },
-  2: {
-    title: "Moderate NPDR (ICDR Level 2)",
-    category: "Microaneurysms & Blot Hemorrhages",
-    description: "Microaneurysms and intraretinal hemorrhages in nasal & inferior quadrants. Early exudation noted.",
-    color: "orange",
-    bg: "bg-orange-600",
-    bannerBg: "bg-orange-50 border-orange-200 text-orange-900",
-    badge: "bg-orange-100 text-orange-800",
-    action: "Specialist Triage Required",
-  },
-  3: {
-    title: "Severe NPDR (ICDR Level 3)",
-    category: "4-2-1 Rule Triggered",
-    description: "Extensive intraretinal hemorrhages in all 4 quadrants, venous beading, and soft exudates (cotton-wool spots).",
-    color: "rose",
-    bg: "bg-rose-600",
-    bannerBg: "bg-rose-50 border-rose-200 text-rose-900",
-    badge: "bg-rose-100 text-rose-800",
-    action: "Urgent Specialist Referral",
-  },
-  4: {
-    title: "Proliferative DR (ICDR Level 4)",
-    category: "Neovascularization (PDR)",
-    description: "Neovascularization of the disc/retina with vitreous hemorrhage risk. High threat to central vision.",
-    color: "red",
-    bg: "bg-red-700",
-    bannerBg: "bg-red-50 border-red-200 text-red-950",
-    badge: "bg-red-100 text-red-800",
-    action: "Emergency Laser / Surgical Review",
-  },
+/* ── Design tokens ─────────────────────────────────────────────────────────── */
+const D = {
+  bg:    '#0a0f14',
+  panel: '#111820',
+  border:'#1e2d3d',
+  teal:  '#00d4aa',
+  text:  '#e8f4f8',
+  sub:   '#7a9ab0',
+  muted: '#3a5068',
+  mono:  'JetBrains Mono, "Courier New", monospace',
 };
+
+const GRADE_LABELS = [
+  { key: 0, name: 'Grade 0: No DR',           color: '#22c55e', shortName: 'No DR' },
+  { key: 1, name: 'Grade 1: Mild NPDR',        color: '#84cc16', shortName: 'Mild NPDR' },
+  { key: 2, name: 'Grade 2: Moderate NPDR',    color: '#f59e0b', shortName: 'Moderate NPDR' },
+  { key: 3, name: 'Grade 3: Severe NPDR',      color: '#ea580c', shortName: 'Severe NPDR' },
+  { key: 4, name: 'Grade 4: Proliferative DR', color: '#dc2626', shortName: 'Proliferative DR' },
+];
+
+const SEVERITY_ACTIONS = [
+  'Routine annual re-screening',
+  'Monitor every 6–12 months',
+  'Specialist triage required — refer within 1 month',
+  'Urgent referral — within 1 week',
+  'Emergency — refer within 24 hours',
+];
+
+const LEGEND_TYPES = [
+  { type: 'neovascular',   label: 'Neovascularization', color: '#ec4899' },
+  { type: 'hemorrhage',    label: 'Hemorrhage',          color: '#ef4444' },
+  { type: 'hardExudate',   label: 'Hard Exudate',        color: '#00d4aa' },
+  { type: 'microaneurysm', label: 'Microaneurysm',       color: '#eab308' },
+  { type: 'cottonWool',    label: 'Cotton Wool Spot',    color: '#a855f7' },
+];
+
+const KEYFRAMES = `
+  @keyframes pin-pulse {
+    0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.8; }
+    50%  { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
+    100% { transform: translate(-50%,-50%) scale(1);   opacity: 0; }
+  }
+  @keyframes pin-in {
+    from { transform: translate(-50%,-50%) scale(0); opacity: 0; }
+    to   { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  }
+  @keyframes bar-grow {
+    from { width: 0; }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+`;
+
+function getQuadrant(x, y) {
+  return (y < 50 ? 'S' : 'I') + (x < 50 ? 'T' : 'N');
+}
 
 export default function Results({
   navigate,
@@ -61,407 +74,507 @@ export default function Results({
   setSelectedEye = () => {},
   heatmapUrl = '',
   uploadedImageUrl = '',
-  onQueue
+  onQueue,
 }) {
-  const [isInverted, setIsInverted] = useState(false);
-  const [heatmapVisible, setHeatmapVisible] = useState(true);
+  const [showHeatmap,  setShowHeatmap]  = useState(true);
+  const [showPins,     setShowPins]     = useState(true);
+  const [showRedFree,  setShowRedFree]  = useState(false);
+  const [hoveredId,    setHoveredId]    = useState(null);
+  const [bilateral,    setBilateral]    = useState(false);
 
-  const currentSeverity = severity ?? patient?.severity ?? 2;
-  const currentEye = selectedEye || 'od';
-  const info = SEVERITY_DETAILS[currentSeverity] || SEVERITY_DETAILS[2];
+  const sev       = severity ?? patient?.severity ?? 2;
+  const eye       = selectedEye || 'od';
+  const lesions   = lesionsBySeverity[sev] || [];
+  const probs     = getProbabilityDistribution(sev);
+  const gradeInfo = GRADE_LABELS[sev] || GRADE_LABELS[2];
+  const conf      = patient?.confidence ?? (91 + sev * 1.4).toFixed(1);
 
-  // Use the real uploaded image if available, else fall back to demo static image
-  const fundusPath    = uploadedImageUrl || `/images/img_${currentSeverity}_${currentEye}.jpg`;
-  // Backend Grad-CAM is a composite image (heatmap baked onto retina by OpenCV)
-  // When Grad-CAM is ON: show the real composite; when OFF: show the plain uploaded image
-  const heatmapPath   = heatmapUrl ? `http://localhost:8000${heatmapUrl}` : `/images/heatmap_${currentSeverity}_${currentEye}.jpg`;
-  const hasRealHeatmap = !!heatmapUrl;
+  // Prefer real uploaded image; fall back to demo
+  const fundusPath  = uploadedImageUrl || `/images/img_${sev}_${eye}.jpg`;
+  const heatmapPath = heatmapUrl
+    ? `http://localhost:8000${heatmapUrl}`
+    : `/images/heatmap_${sev}_${eye}.jpg`;
 
-  const name = patient?.fullName || patient?.name || 'Smt. Geeta Sharma';
-  const confidence = patient?.confidence ?? (95 + currentSeverity * 1.1).toFixed(1);
+  const presentTypes = LEGEND_TYPES.filter(t => lesions.some(l => l.type === t.type));
 
-  const handleQueueClick = () => {
-    if (onQueue) {
-      onQueue();
-    } else if (navigate) {
-      navigate('queue');
+  const quadCounts = { ST: 0, SN: 0, IT: 0, IN: 0 };
+  lesions.forEach(l => { const q = getQuadrant(l.x, l.y); if (quadCounts[q] !== undefined) quadCounts[q]++; });
+
+  const studyId  = patient?.id?.replace('#', '') || 'STUDY-DR88219';
+  const patName  = patient?.fullName || patient?.name || 'Smt. Geeta Sharma';
+
+  const handleQueueClick = () => { if (onQueue) onQueue(); else if (navigate) navigate('queue'); };
+
+  // Inject keyframes
+  useEffect(() => {
+    const id = 'results-keyframes';
+    if (!document.getElementById(id)) {
+      const s = document.createElement('style');
+      s.id = id; s.textContent = KEYFRAMES;
+      document.head.appendChild(s);
     }
-  };
+  }, []);
 
   return (
-    <main className="w-full min-h-screen bg-slate-50 pt-20 pb-16 font-body-md text-slate-800">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col gap-6">
+    <div style={{
+      minHeight: '100vh',
+      background: D.bg,
+      color: D.text,
+      fontFamily: 'Inter, system-ui, sans-serif',
+      display: 'flex', flexDirection: 'column',
+      animation: 'fade-up 0.3s ease both',
+    }}>
 
-        {/* Top bar: Back breadcrumb & System Status */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <button
-            onClick={() => navigate ? navigate('upload') : null}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-colors text-slate-700 font-semibold text-xs cursor-pointer shadow-xs"
-          >
-            <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-            <span>Back to Upload</span>
-          </button>
+      {/* ── Title bar (like workstation header) ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 14,
+        padding: '8px 20px',
+        background: D.panel, borderBottom: `1px solid ${D.border}`,
+        flexShrink: 0, flexWrap: 'wrap',
+      }}>
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e', flexShrink: 0 }} />
+        <span style={{ fontFamily: D.mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: D.text }}>
+          DIAGNOSTIC RESULTS · ICDR ANALYSIS
+        </span>
+        <span style={{ padding: '3px 10px', borderRadius: 5, background: 'rgba(255,255,255,0.05)', border: `1px solid ${D.border}`, fontFamily: D.mono, fontSize: 10, color: D.sub }}>
+          {studyId} · Eye: <strong style={{ color: D.teal }}>{eye.toUpperCase()}</strong>
+        </span>
 
-          <div className="flex items-center gap-3">
-            <span className="px-3 py-1 rounded-md bg-white border border-slate-200 text-slate-600 font-mono text-xs font-medium">
-              CASE: <strong className="text-slate-900">{patient?.id || '#DR-2026-8841'}</strong>
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-teal-50 border border-teal-200 text-teal-800 font-mono text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
-              EDGE-INFERRED · LOCAL RIG
-            </span>
-          </div>
-        </div>
+        <div style={{ flex: 1 }} />
 
-        {/* Patient header card */}
-        <div className="w-full bg-white rounded-2xl border border-slate-200/80 p-5 md:p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-13 h-13 rounded-xl bg-teal-50 border border-teal-200 text-[#0B5563] flex items-center justify-center font-bold text-lg shrink-0">
-              <span className="material-symbols-outlined text-[28px]">person</span>
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-xl md:text-2xl text-slate-900 font-bold tracking-tight">{name}</h1>
-                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold tracking-wide uppercase">
-                  {patient?.gender === 'M' ? 'Male' : 'Female'} · {patient?.age || 54} Y
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold tracking-wide uppercase">
-                  Type 2 Diabetes ({patient?.age ? `${patient.age - 46} yrs` : '8 yrs'})
-                </span>
-              </div>
-              <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500 flex-wrap">
-                <span>Location: <strong className="text-slate-700">{patient?.village || 'PHC Mandawar, Alwar'}</strong></span>
-                <span>•</span>
-                <span>Camera: <strong className="text-slate-700">Forus 3nethra 45°</strong></span>
-                <span>•</span>
-                <span className="font-mono text-slate-600">Captured: Today, 14:28 IST</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Controls: Eye Toggle + Invert + Heatmap */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* Eye Toggle */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
-              <button
-                onClick={() => setSelectedEye('od')}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
-                  currentEye === 'od'
-                    ? 'bg-[#0B5563] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>Right Eye (OD)</span>
-              </button>
-              <button
-                onClick={() => setSelectedEye('os')}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
-                  currentEye === 'os'
-                    ? 'bg-[#0B5563] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>Left Eye (OS)</span>
-              </button>
-            </div>
-
-            {/* Invert */}
-            <button
-              onClick={() => setIsInverted(v => !v)}
-              className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-colors cursor-pointer ${
-                isInverted
-                  ? 'bg-slate-800 text-white border-slate-800'
-                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[16px]">contrast</span>
-              <span>Optical Invert</span>
+        {/* Eye toggle */}
+        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', border: `1px solid ${D.border}`, borderRadius: 6, padding: 2, gap: 2 }}>
+          {['od', 'os'].map(e => (
+            <button key={e} onClick={() => setSelectedEye(e)} style={{
+              all: 'unset', cursor: 'pointer',
+              padding: '4px 12px', borderRadius: 4,
+              fontFamily: D.mono, fontSize: 11, fontWeight: 700,
+              background: eye === e ? 'rgba(0,212,170,0.15)' : 'transparent',
+              color: eye === e ? D.teal : D.muted,
+              border: eye === e ? '1px solid rgba(0,212,170,0.3)' : '1px solid transparent',
+            }}>
+              {e.toUpperCase()}
             </button>
+          ))}
+        </div>
 
-            {/* Heatmap */}
-            <button
-              onClick={() => setHeatmapVisible(v => !v)}
-              className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-colors cursor-pointer ${
-                heatmapVisible
-                  ? 'bg-teal-50 text-teal-800 border-teal-300'
-                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[16px]">
-                {heatmapVisible ? 'visibility' : 'visibility_off'}
-              </span>
-              <span>Grad-CAM: {heatmapVisible ? 'ON' : 'OFF'}</span>
-            </button>
+        <button onClick={() => setBilateral(v => !v)} style={{
+          all: 'unset', cursor: 'pointer',
+          padding: '4px 12px', borderRadius: 5,
+          background: bilateral ? 'rgba(168,85,247,0.15)' : 'rgba(255,255,255,0.04)',
+          border: `1px solid ${bilateral ? 'rgba(168,85,247,0.4)' : D.border}`,
+          fontFamily: D.mono, fontSize: 10,
+          color: bilateral ? '#a855f7' : D.muted,
+        }}>⊞ Bilateral</button>
+
+        <button onClick={() => navigate?.('upload')} style={{
+          all: 'unset', cursor: 'pointer',
+          padding: '5px 12px', borderRadius: 6,
+          background: 'rgba(255,255,255,0.04)', border: `1px solid ${D.border}`,
+          fontFamily: D.mono, fontSize: 10, color: D.sub,
+        }}>← New Scan</button>
+      </div>
+
+      {/* ── Patient header strip ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 32,
+        padding: '12px 20px',
+        background: 'rgba(0,212,170,0.04)',
+        borderBottom: `1px solid rgba(0,212,170,0.15)`,
+        flexShrink: 0, flexWrap: 'wrap',
+      }}>
+        {/* Grade badge */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '6px 16px', borderRadius: 8,
+          background: `${gradeInfo.color}18`, border: `1px solid ${gradeInfo.color}50`,
+        }}>
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: gradeInfo.color, boxShadow: `0 0 8px ${gradeInfo.color}` }} />
+          <div>
+            <div style={{ fontFamily: D.mono, fontSize: 13, fontWeight: 800, color: gradeInfo.color }}>{gradeInfo.shortName}</div>
+            <div style={{ fontFamily: D.mono, fontSize: 9, color: D.muted }}>ICDR LEVEL {sev}</div>
           </div>
         </div>
 
-        {/* Severity Banner */}
-        <div className={`w-full rounded-2xl border p-5 md:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5 transition-colors ${info.bannerBg}`}>
-          <div className="flex items-start md:items-center gap-4">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm ${info.bg}`}>
-              <span className="material-symbols-outlined text-[28px]">
-                {currentSeverity === 0 ? 'verified' : currentSeverity >= 3 ? 'emergency' : 'warning'}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <span className="text-xl font-bold tracking-tight text-slate-900">{info.title}</span>
-                <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide ${info.badge}`}>
-                  {info.category}
-                </span>
-              </div>
-              <p className="text-sm text-slate-700 mt-1 max-w-2xl font-normal leading-relaxed">
-                {patient?.findings || info.description}
-              </p>
-            </div>
-          </div>
-          <div className="shrink-0 flex items-center">
-            <span className="px-4 py-2 rounded-xl bg-white/90 border border-slate-200/80 shadow-xs font-mono text-xs font-bold uppercase text-slate-900 tracking-wide">
-              {info.action}
-            </span>
+        {/* Patient name */}
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: D.text }}>{patName}</div>
+          <div style={{ fontFamily: D.mono, fontSize: 10, color: D.muted, marginTop: 2 }}>
+            {patient?.age}Y / {patient?.gender === 'M' ? 'Male' : 'Female'} · {patient?.village || 'PHC Mandawar'}
           </div>
         </div>
 
-        {/* Core two-column grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
-          {/* Left: Fundus Viewport (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col gap-4">
-            <div className="w-full bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col gap-4">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#0B5563] text-[20px]">center_focus_strong</span>
-                  <span className="font-bold text-slate-900 text-sm">
-                    Fundus Heatmap Examination ({currentEye === 'od' ? 'Right Eye / OD' : 'Left Eye / OS'})
-                  </span>
-                </div>
-                <span className="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600 font-mono text-[11px] font-semibold">
-                  FOV 45° MACULAR
-                </span>
-              </div>
+        {/* Confidence */}
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontFamily: D.mono, fontSize: 22, fontWeight: 800, color: D.teal }}>{conf}%</div>
+          <div style={{ fontFamily: D.mono, fontSize: 9, color: D.muted }}>MODEL CONFIDENCE</div>
+        </div>
 
-              {/* Viewport Box */}
-              <div className="relative w-full aspect-[4/3] bg-slate-950 rounded-xl overflow-hidden select-none flex items-center justify-center group cursor-crosshair shadow-inner" id="retinaViewport">
-                {/* Base image: uploaded file OR Grad-CAM composite when heatmap is on */}
-                <img
-                  alt={`Fundus Retina ${currentEye.toUpperCase()}`}
-                  className="w-full h-full object-cover transition-all duration-300"
-                  style={{ filter: isInverted ? 'invert(100%) contrast(140%) hue-rotate(180deg)' : 'none' }}
-                  src={heatmapVisible && hasRealHeatmap ? heatmapPath : fundusPath}
-                  onError={(e) => {
-                    // fallback if either URL fails
-                    e.target.src = `/images/img_${currentSeverity}_od.jpg`;
+        {/* Lesion count */}
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontFamily: D.mono, fontSize: 22, fontWeight: 800, color: '#f59e0b' }}>{lesions.length}</div>
+          <div style={{ fontFamily: D.mono, fontSize: 9, color: D.muted }}>LESIONS DETECTED</div>
+        </div>
+
+        {/* HbA1c if available */}
+        {patient?.hba1c && (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontFamily: D.mono, fontSize: 22, fontWeight: 800, color: patient.hba1c > 9 ? '#ea580c' : '#84cc16' }}>{patient.hba1c}%</div>
+            <div style={{ fontFamily: D.mono, fontSize: 9, color: D.muted }}>HbA1c</div>
+          </div>
+        )}
+
+        <div style={{ flex: 1 }} />
+
+        {/* Action recommendation */}
+        <div style={{
+          padding: '8px 16px', borderRadius: 8,
+          background: sev >= 3 ? 'rgba(220,38,38,0.12)' : sev >= 2 ? 'rgba(234,88,12,0.1)' : 'rgba(34,197,94,0.08)',
+          border: `1px solid ${sev >= 3 ? 'rgba(220,38,38,0.3)' : sev >= 2 ? 'rgba(234,88,12,0.25)' : 'rgba(34,197,94,0.2)'}`,
+          fontFamily: D.mono, fontSize: 11, fontWeight: 700,
+          color: sev >= 3 ? '#dc2626' : sev >= 2 ? '#ea580c' : '#22c55e',
+          maxWidth: 260,
+        }}>
+          ⚡ {SEVERITY_ACTIONS[sev]}
+        </div>
+
+        {/* Queue CTA */}
+        <button onClick={handleQueueClick} style={{
+          all: 'unset', cursor: 'pointer',
+          padding: '10px 22px', borderRadius: 8,
+          background: 'rgba(0,212,170,0.18)', border: '1px solid rgba(0,212,170,0.4)',
+          fontFamily: D.mono, fontSize: 12, fontWeight: 700, color: D.teal,
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          Send to Review Queue →
+        </button>
+      </div>
+
+      {/* ── Main two-panel body ── */}
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+
+        {/* ════ LEFT PANEL — Fundus viewport ════ */}
+        <div style={{
+          flex: '0 0 60%', display: 'flex', flexDirection: 'column',
+          borderRight: `1px solid ${D.border}`,
+          background: '#07111a',
+        }}>
+          {/* Toolbar */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '8px 16px',
+            background: D.panel, borderBottom: `1px solid ${D.border}`,
+            flexShrink: 0, flexWrap: 'wrap',
+          }}>
+            <ToolBtn active={showRedFree}  onClick={() => setShowRedFree(v => !v)}  label="Red-Free (540nm)" />
+            <div style={{ width: 1, height: 20, background: D.border }} />
+            <ToolBtn active={showHeatmap}  onClick={() => setShowHeatmap(v => !v)}  label="Grad-CAM++" accent />
+            <div style={{ width: 1, height: 20, background: D.border }} />
+            <ToolBtn active={showPins}     onClick={() => setShowPins(v => !v)}     label={`Pins (${lesions.length})`} icon="⊕" />
+            <div style={{ flex: 1 }} />
+            <span style={{ fontFamily: D.mono, fontSize: 9, color: D.muted }}>ZOOM: 100% · FOV 45°</span>
+          </div>
+
+          {/* Image area */}
+          <div style={{
+            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: '#050d14', position: 'relative', overflow: 'hidden',
+          }}>
+            {/* Patient overlay — top left */}
+            <div style={{
+              position: 'absolute', top: 14, left: 14, zIndex: 10,
+              background: 'rgba(5,13,20,0.87)', backdropFilter: 'blur(6px)',
+              border: `1px solid ${D.border}`, borderRadius: 6, padding: '8px 12px',
+              fontFamily: D.mono, fontSize: 10, lineHeight: 1.85, color: D.sub,
+            }}>
+              <div><span style={{ color: D.muted }}>PATIENT: </span><strong style={{ color: D.text }}>{studyId}</strong></div>
+              <div><span style={{ color: D.muted }}>STUDY: </span>CFP 45° RETINAL SCAN</div>
+              <div><span style={{ color: D.muted }}>EYE: </span><strong style={{ color: D.teal }}>{eye.toUpperCase()} ({eye === 'od' ? 'RIGHT' : 'LEFT'})</strong></div>
+              <div><span style={{ color: D.muted }}>FOV: </span>45 DEGREE POSTERIOR POLE</div>
+            </div>
+
+            {/* Tech overlay — top right */}
+            <div style={{
+              position: 'absolute', top: 14, right: 14, zIndex: 10,
+              background: 'rgba(5,13,20,0.87)', backdropFilter: 'blur(6px)',
+              border: `1px solid ${D.border}`, borderRadius: 6, padding: '8px 12px',
+              fontFamily: D.mono, fontSize: 10, lineHeight: 1.85, color: D.sub, textAlign: 'right',
+            }}>
+              <div><span style={{ color: D.muted }}>ZOOM: </span><strong style={{ color: D.text }}>100%</strong></div>
+              <div><span style={{ color: D.muted }}>RED-FREE: </span><strong style={{ color: showRedFree ? D.teal : D.muted }}>{showRedFree ? 'ON' : 'OFF'}</strong></div>
+              <div><span style={{ color: D.muted }}>SALIENCY: </span><strong style={{ color: showHeatmap ? D.teal : D.muted }}>{showHeatmap ? 'Grad-CAM++' : 'OFF'}</strong></div>
+              <div><span style={{ color: D.muted }}>RESOLUTION: </span>512 × 512 px</div>
+            </div>
+
+            {/* ── Circular fundus with lesion pins ── */}
+            <div style={{
+              position: 'relative',
+              width: 500, height: 500,
+              borderRadius: '50%',
+              overflow: 'hidden',
+              boxShadow: '0 0 0 1px rgba(255,255,255,0.06), 0 0 80px rgba(0,0,0,0.9)',
+              flexShrink: 0,
+            }}>
+              <img
+                src={fundusPath}
+                alt={`Retina Grade ${sev}`}
+                onError={e => { e.target.src = '/images/img_2_od.jpg'; }}
+                style={{
+                  width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+                  filter: showRedFree ? 'sepia(1) saturate(0.3) hue-rotate(90deg) contrast(1.2)' : 'none',
+                }}
+              />
+
+              {showHeatmap && (
+                <img src={heatmapPath} alt="Grad-CAM"
+                  onError={e => { e.target.style.display = 'none'; }}
+                  style={{
+                    position: 'absolute', inset: 0,
+                    width: '100%', height: '100%', objectFit: 'cover',
+                    mixBlendMode: 'screen', opacity: 0.72, pointerEvents: 'none',
                   }}
                 />
+              )}
 
-                {/* Static heatmap overlay — only used when no real backend heatmap exists */}
-                {heatmapVisible && !hasRealHeatmap && (
-                  <img
-                    src={`/images/heatmap_${currentSeverity}_${currentEye}.jpg`}
-                    alt="Grad-CAM Heatmap"
-                    className="absolute inset-0 w-full h-full object-cover mix-blend-screen opacity-75 pointer-events-none transition-opacity duration-300"
-                    onError={(e) => { e.target.style.display = 'none'; }}
-                  />
-                )}
+              {/* Pins */}
+              {showPins && lesions.map((lesion, idx) => {
+                const lt    = lesionTypes[lesion.type] || lesionTypes.microaneurysm;
+                const isHov = hoveredId === lesion.id;
+                return (
+                  <div key={lesion.id}
+                    style={{ position: 'absolute', left: `${lesion.x}%`, top: `${lesion.y}%`, zIndex: isHov ? 30 : 10 }}
+                    onMouseEnter={() => setHoveredId(lesion.id)}
+                    onMouseLeave={() => setHoveredId(null)}
+                  >
+                    {/* Pulse ring */}
+                    <div style={{
+                      position: 'absolute', width: 22, height: 22, borderRadius: '50%',
+                      border: `1.5px solid ${lt.color}`,
+                      animation: `pin-pulse 2s ${idx * 0.15}s infinite`,
+                      transform: 'translate(-50%,-50%)', pointerEvents: 'none',
+                    }} />
+                    {/* Dot */}
+                    <div style={{
+                      width: isHov ? 18 : 11, height: isHov ? 18 : 11,
+                      borderRadius: '50%',
+                      background: lt.color,
+                      border: `2px solid rgba(255,255,255,0.9)`,
+                      boxShadow: `0 0 ${isHov ? 14 : 5}px ${lt.color}`,
+                      transform: 'translate(-50%,-50%)',
+                      transition: 'all 0.15s',
+                      animation: `pin-in 0.3s ${idx * 0.04}s both`,
+                      cursor: 'crosshair',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {isHov && <span style={{ fontSize: 6, fontWeight: 900, color: '#fff', fontFamily: D.mono }}>{lesion.id}</span>}
+                    </div>
+                    {/* Tooltip */}
+                    {isHov && (
+                      <div style={{
+                        position: 'absolute', bottom: '100%', left: '50%',
+                        transform: 'translateX(-50%) translateY(-8px)',
+                        background: 'rgba(5,13,20,0.96)',
+                        border: `1px solid ${lt.color}60`,
+                        borderRadius: 7, padding: '7px 12px',
+                        whiteSpace: 'nowrap', zIndex: 50, pointerEvents: 'none',
+                        boxShadow: `0 4px 20px rgba(0,0,0,0.7)`,
+                      }}>
+                        <div style={{ fontFamily: D.mono, fontSize: 11, fontWeight: 700, color: lt.color, marginBottom: 3 }}>
+                          #{lesion.id < 10 ? '0' + lesion.id : lesion.id} {lt.label.toUpperCase()}
+                        </div>
+                        <div style={{ fontFamily: D.mono, fontSize: 10, color: D.sub }}>
+                          Conf: <strong style={{ color: D.text }}>{lesion.confidence}%</strong>
+                          &nbsp;&nbsp;Dim: <strong style={{ color: D.sub }}>{(lesion.confidence * 0.056).toFixed(1)}%</strong>
+                        </div>
+                        <div style={{ fontFamily: D.mono, fontSize: 10, color: D.muted, marginTop: 2 }}>
+                          [{(lesion.x / 100).toFixed(2)}, {(lesion.y / 100).toFixed(2)}]
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
 
-                {/* SVG Quadrant Reticle */}
-                {heatmapVisible && currentSeverity >= 2 && (
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40" fill="none" viewBox="0 0 800 600">
-                    <circle cx="400" cy="300" r="70" stroke="#38bdf8" strokeDasharray="4 4" strokeWidth="1.5"/>
-                    <circle cx="400" cy="300" r="160" stroke="#38bdf8" strokeDasharray="6 6" strokeWidth="1.2"/>
-                    <line stroke="#38bdf8" strokeOpacity="0.4" strokeWidth="1" x1="400" x2="400" y1="20" y2="580"/>
-                    <line stroke="#38bdf8" strokeOpacity="0.4" strokeWidth="1" x1="20" x2="780" y1="300" y2="300"/>
-                    <text fill="#38bdf8" fontFamily="JetBrains Mono, monospace" fontSize="11" fontWeight="600" x="410" y="45">SUPERIOR</text>
-                    <text fill="#38bdf8" fontFamily="JetBrains Mono, monospace" fontSize="11" fontWeight="600" x="410" y="575">INFERIOR</text>
-                    <text fill="#38bdf8" fontFamily="JetBrains Mono, monospace" fontSize="11" fontWeight="600" x="35" y="290">TEMPORAL</text>
-                    <text fill="#38bdf8" fontFamily="JetBrains Mono, monospace" fontSize="11" fontWeight="600" x="715" y="290">NASAL</text>
-                    {/* Lesion Annotation Marker 1 */}
-                    <circle cx="485" cy="340" fill="#f97316" fillOpacity="0.4" r="16"/>
-                    <circle cx="485" cy="340" fill="#ef4444" r="4"/>
-                    <rect fill="#0f172a" fillOpacity="0.85" height="22" rx="4" width="115" x="505" y="328"/>
-                    <text fill="#e2e8f0" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="600" x="512" y="343">MA #01 (p=0.98)</text>
-                    {/* Lesion Annotation Marker 2 */}
-                    <circle cx="330" cy="240" fill="#f97316" fillOpacity="0.4" r="20"/>
-                    <circle cx="330" cy="240" fill="#ef4444" r="5"/>
-                    <rect fill="#0f172a" fillOpacity="0.85" height="22" rx="4" width="120" x="200" y="228"/>
-                    <text fill="#e2e8f0" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="600" x="207" y="243">HEM #04 (Blot)</text>
-                  </svg>
-                )}
-
-                {/* HUD info overlays */}
-                <div className="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-none">
-                  <span className="px-2.5 py-1 rounded-md bg-slate-900/80 backdrop-blur-md text-teal-300 font-mono text-[11px] font-semibold uppercase">
-                    {currentEye}: {currentEye === 'od' ? 'RIGHT EYE' : 'LEFT EYE'}
-                  </span>
-                  <span className="px-2.5 py-1 rounded-md bg-slate-900/80 backdrop-blur-md text-slate-300 font-mono text-[11px]">
-                    {heatmapVisible ? 'GRAD-CAM++ ACTIVE' : 'HEATMAP MUTED'}
-                  </span>
-                </div>
-                <div className="absolute bottom-3 right-3 flex items-center gap-2 pointer-events-none">
-                  <span className="px-2.5 py-1 rounded-md bg-slate-900/80 backdrop-blur-md text-slate-300 font-mono text-[11px]">
-                    ZOOM: 1.0×
-                  </span>
-                  <span className="px-2.5 py-1 rounded-md bg-slate-900/80 backdrop-blur-md text-emerald-400 font-mono text-[11px]">
-                    QUALITY: 94/100
-                  </span>
-                </div>
+            {/* Quadrant radar */}
+            <div style={{
+              position: 'absolute', bottom: 16, right: 16,
+              background: 'rgba(5,13,20,0.9)', backdropFilter: 'blur(6px)',
+              border: `1px solid ${D.border}`,
+              borderRadius: 8, padding: '10px 14px',
+              fontFamily: D.mono, fontSize: 11, zIndex: 20,
+            }}>
+              <div style={{ fontSize: 9, color: D.muted, letterSpacing: '0.1em', marginBottom: 8, textAlign: 'center' }}>⊕ QUADRANT RADAR</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3px 18px', textAlign: 'center' }}>
+                {[['ST', quadCounts.ST], ['SN', quadCounts.SN], ['IT', quadCounts.IT], ['IN', quadCounts.IN]].map(([q, c]) => (
+                  <div key={q}><span style={{ color: D.muted }}>{q}: </span><strong style={{ color: D.teal }}>{c}</strong></div>
+                ))}
               </div>
+            </div>
+          </div>
 
-              {/* Viewport Telemetry Row */}
-              <div className="grid grid-cols-3 gap-3 pt-1">
-                {[
-                  { label: 'Camera Hardware', value: 'Forus 3nethra Pro' },
-                  { label: 'Pupil Status', value: 'Non-Mydriatic (4.2mm)' },
-                  { label: 'Optical Density', value: `${currentEye.toUpperCase()} 1.14 (Optimal)`, highlight: true },
-                ].map((m) => (
-                  <div key={m.label} className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col">
-                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{m.label}</span>
-                    <span className={`font-mono text-xs font-bold mt-0.5 ${m.highlight ? 'text-[#0B5563]' : 'text-slate-800'}`}>
-                      {m.value}
+          {/* Legend strip */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap',
+            padding: '10px 16px',
+            background: D.panel, borderTop: `1px solid ${D.border}`,
+            flexShrink: 0,
+          }}>
+            <span style={{ fontFamily: D.mono, fontSize: 9, color: D.muted, letterSpacing: '0.07em' }}>Pathological Markers:</span>
+            {presentTypes.map(t => (
+              <span key={t.type} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: D.sub }}>
+                <span style={{ width: 9, height: 9, borderRadius: '50%', background: t.color, boxShadow: `0 0 5px ${t.color}`, display: 'inline-block' }} />
+                {t.label}
+              </span>
+            ))}
+            <div style={{ flex: 1 }} />
+            <span style={{ fontFamily: D.mono, fontSize: 9, color: D.muted }}>Ben Graham Normalization · 512×512 Standard</span>
+          </div>
+        </div>
+
+        {/* ════ RIGHT PANEL — Probability + Findings ════ */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: D.bg, overflow: 'hidden' }}>
+
+          {/* Probability distribution */}
+          <div style={{ padding: '18px 20px 16px', borderBottom: `1px solid ${D.border}`, flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <span style={{ fontFamily: D.mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: D.text }}>
+                ICDR ORDINAL PROBABILITY DISTRIBUTION
+              </span>
+              <span style={{ fontFamily: D.mono, fontSize: 9, color: D.teal, border: `1px solid ${D.border}`, padding: '2px 8px', borderRadius: 4 }}>
+                Calibrated Softmax
+              </span>
+            </div>
+            {GRADE_LABELS.map(g => {
+              const prob   = probs[g.key] || 0;
+              const isPred = g.key === sev;
+              return (
+                <div key={g.key} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 11 }}>
+                  <span style={{
+                    width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+                    background: isPred ? g.color : 'transparent',
+                    border: `2px solid ${isPred ? g.color : 'transparent'}`,
+                    boxShadow: isPred ? `0 0 6px ${g.color}` : 'none',
+                  }} />
+                  <span style={{ fontFamily: D.mono, fontSize: 11, minWidth: 170, color: isPred ? D.text : D.sub, fontWeight: isPred ? 700 : 400 }}>
+                    {g.name}
+                  </span>
+                  <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%', width: `${prob}%`,
+                      background: isPred ? g.color : 'rgba(255,255,255,0.14)',
+                      borderRadius: 3,
+                      boxShadow: isPred ? `0 0 8px ${g.color}60` : 'none',
+                      animation: 'bar-grow 0.9s cubic-bezier(0.4,0,0.2,1) both',
+                    }} />
+                  </div>
+                  <span style={{ fontFamily: D.mono, fontSize: 11, minWidth: 34, textAlign: 'right', color: isPred ? g.color : D.sub, fontWeight: isPred ? 700 : 400 }}>
+                    {prob}%
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Indexed findings */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '13px 20px 9px', borderBottom: `1px solid ${D.border}`, flexShrink: 0,
+            }}>
+              <span style={{ fontFamily: D.mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: D.text }}>
+                INDEXED PATHOLOGICAL FINDINGS ({lesions.length})
+              </span>
+              <span style={{ fontFamily: D.mono, fontSize: 9, color: D.teal }}>U-Net Segmentor (IDRiD)</span>
+            </div>
+
+            {/* Column headers */}
+            <div style={{
+              display: 'grid', gridTemplateColumns: '28px 80px 1fr 90px 44px',
+              padding: '5px 20px', borderBottom: `1px solid ${D.border}`, flexShrink: 0,
+            }}>
+              {['#', 'Finding', 'Region', 'Coords', 'Conf'].map(h => (
+                <span key={h} style={{ fontFamily: D.mono, fontSize: 9, color: D.muted, letterSpacing: '0.07em', textTransform: 'uppercase' }}>{h}</span>
+              ))}
+            </div>
+
+            {/* Rows */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
+              {lesions.length === 0 && (
+                <div style={{ padding: '32px 20px', textAlign: 'center', fontFamily: D.mono, fontSize: 12, color: D.muted }}>
+                  ✓ No lesions detected — Healthy fundus (Grade 0)
+                </div>
+              )}
+              {lesions.map(lesion => {
+                const lt    = lesionTypes[lesion.type] || lesionTypes.microaneurysm;
+                const region = getLesionRegion(lesion.x, lesion.y);
+                const isHov  = hoveredId === lesion.id;
+                return (
+                  <div key={lesion.id}
+                    onMouseEnter={() => setHoveredId(lesion.id)}
+                    onMouseLeave={() => setHoveredId(null)}
+                    style={{
+                      display: 'grid', gridTemplateColumns: '28px 80px 1fr 90px 44px',
+                      padding: '8px 20px', alignItems: 'center',
+                      background: isHov ? 'rgba(0,212,170,0.07)' : 'transparent',
+                      borderLeft: isHov ? `2px solid ${D.teal}` : '2px solid transparent',
+                      borderBottom: '1px solid rgba(255,255,255,0.03)',
+                      transition: 'all 0.12s', cursor: 'pointer',
+                    }}
+                  >
+                    <span style={{ fontFamily: D.mono, fontSize: 11, color: D.muted }}>#{lesion.id}</span>
+                    <span style={{
+                      padding: '2px 8px', borderRadius: 4,
+                      background: `${lt.color}20`, border: `1px solid ${lt.color}50`,
+                      fontFamily: D.mono, fontSize: 10, fontWeight: 700, color: lt.color,
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {lt.symbol}
                     </span>
+                    <span style={{ fontFamily: D.mono, fontSize: 11, color: D.sub }}>{region}</span>
+                    <span style={{ fontFamily: D.mono, fontSize: 10, color: D.muted }}>
+                      [{(lesion.x / 100).toFixed(2)}, {(lesion.y / 100).toFixed(2)}]
+                    </span>
+                    <span style={{
+                      fontFamily: D.mono, fontSize: 11, fontWeight: 700,
+                      color: lesion.confidence >= 90 ? '#22c55e' : lesion.confidence >= 80 ? D.teal : '#f59e0b',
+                    }}>{lesion.confidence}%</span>
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
-          </div>
-
-          {/* Right: Pathological Findings & Model Metrics (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col gap-5">
-            
-            {/* Inference Confidence Card */}
-            <div className="w-full bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-teal-50 text-[#0B5563] flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[18px]">psychology</span>
-                  </div>
-                  <h2 className="font-bold text-slate-900 text-sm">Diagnostic Confidence</h2>
-                </div>
-                <span className="font-mono text-xl font-bold text-[#0B5563]">{confidence}%</span>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden flex">
-                  <div
-                    className="h-full bg-[#0B5563] rounded-full transition-all duration-700"
-                    style={{ width: `${confidence}%` }}
-                  ></div>
-                </div>
-                <div className="flex justify-between font-mono text-[11px] text-slate-500">
-                  <span>Standard Cutoff: 85.0%</span>
-                  <span className="text-teal-700 font-bold">High Certainty (+{(confidence - 85).toFixed(1)}%)</span>
-                </div>
-              </div>
-
-              <p className="text-xs text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-100 leading-relaxed">
-                DeepRetina-v4 ensemble model confirmed ICDR Level {currentSeverity} microvascular presentation with 0 dropped frames and zero cloud roundtrip.
-              </p>
-            </div>
-
-            {/* Findings Breakdown */}
-            <div className="w-full bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col gap-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h2 className="font-bold text-slate-900 text-sm">Pathological Biomarkers</h2>
-                <span className="text-[11px] font-bold font-mono text-teal-800 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
-                  {currentEye.toUpperCase()} QUADRANTS
-                </span>
-              </div>
-
-              <div className="flex flex-col gap-2.5">
-                {[
-                  {
-                    icon: 'lens_blur',
-                    label: 'Microaneurysms & Blot Hems',
-                    sub: 'Lesion count in nasal/inferior sectors',
-                    val: currentSeverity === 0 ? '0 detected' : currentSeverity === 1 ? '3 detected' : '14 detected',
-                    detail: currentSeverity === 0 ? 'Clear fundus' : '8 nasal / 6 inferior',
-                    alert: currentSeverity >= 2,
-                  },
-                  {
-                    icon: 'visibility_off',
-                    label: 'Macular Edema Risk (DME)',
-                    sub: 'Foveal avascular zone distance',
-                    val: currentSeverity === 0 ? 'Negative' : currentSeverity < 3 ? 'Borderline' : 'High Risk',
-                    detail: '> 500µm from center',
-                    badge: true,
-                    badgeColor: currentSeverity === 0 ? 'bg-emerald-50 text-emerald-700' : currentSeverity < 3 ? 'bg-amber-50 text-amber-700' : 'bg-rose-50 text-rose-700',
-                  },
-                  {
-                    icon: 'scatter_plot',
-                    label: 'Hard Exudates (Lipid)',
-                    sub: 'Discrete ring patterns',
-                    val: currentSeverity === 0 ? 'None' : currentSeverity === 1 ? '1 punctate' : 'Minimal (2 clusters)',
-                    detail: 'Superior temporal quadrant',
-                  },
-                  {
-                    icon: 'alt_route',
-                    label: 'Venous Caliber (AVR)',
-                    sub: 'Arteriolar-to-venous ratio',
-                    val: currentSeverity >= 3 ? '0.52 (Beading)' : '0.64 (Normal)',
-                    detail: currentSeverity >= 3 ? 'Venous beading noted' : 'No beading observed',
-                  },
-                ].map((item) => (
-                  <div key={item.label} className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-white border border-slate-200/80 flex items-center justify-center text-[#0B5563] shrink-0">
-                        <span className="material-symbols-outlined text-[17px]">{item.icon}</span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-xs font-bold text-slate-800">{item.label}</span>
-                        <span className="text-[11px] text-slate-500">{item.sub}</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end shrink-0">
-                      {item.badge ? (
-                        <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${item.badgeColor}`}>
-                          {item.val}
-                        </span>
-                      ) : (
-                        <span className={`font-mono text-xs font-bold ${item.alert ? 'text-orange-600' : 'text-slate-800'}`}>
-                          {item.val}
-                        </span>
-                      )}
-                      <span className="text-[10px] text-slate-400 font-mono">{item.detail}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Standard Protocol Info */}
-            <div className="w-full bg-slate-100/80 border border-slate-200/80 rounded-2xl p-4 flex items-start gap-3">
-              <span className="material-symbols-outlined text-[#0B5563] text-[22px] mt-0.5">assignment_turned_in</span>
-              <div className="flex flex-col">
-                <span className="text-xs font-bold text-slate-900">National Health Protocol</span>
-                <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                  Rural MoHFW protocol advises tele-ophthalmology sign-off within 48 hours for Grade {currentSeverity} cases before dispensary discharge.
-                </p>
-              </div>
-            </div>
-
           </div>
         </div>
-
-        {/* Action Strip / CTA to Review Queue */}
-        <div className="w-full bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Next Step: Tele-Triage Verification</span>
-            <h3 className="text-lg font-bold text-slate-900 mt-0.5">Submit to Regional Tele-Ophthalmology Queue</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-xl">
-              Packages telemetry, full 45° DICOM images, and Grad-CAM layer to the district ophthalmologist triage console.
-            </p>
-          </div>
-          <button
-            onClick={handleQueueClick}
-            className="w-full md:w-auto px-8 py-4 text-sm font-bold rounded-xl shadow-md flex items-center justify-center gap-2.5 bg-[#0B5563] text-white hover:bg-[#093f4a] hover:shadow-lg transition-all shrink-0 cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-[20px]">outbox</span>
-            <span>Send for Review</span>
-            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-          </button>
-        </div>
-
       </div>
-    </main>
+    </div>
+  );
+}
+
+/* helper */
+function ToolBtn({ active, onClick, label, accent, icon }) {
+  return (
+    <button onClick={onClick} style={{
+      all: 'unset', cursor: 'pointer',
+      display: 'flex', alignItems: 'center', gap: 5,
+      padding: '4px 10px', borderRadius: 5,
+      background: active ? (accent ? 'rgba(0,212,170,0.15)' : 'rgba(255,255,255,0.08)') : 'transparent',
+      border: `1px solid ${active ? (accent ? 'rgba(0,212,170,0.4)' : 'rgba(255,255,255,0.15)') : 'transparent'}`,
+      fontFamily: 'JetBrains Mono, monospace', fontSize: 11,
+      color: active ? (accent ? '#00d4aa' : '#e8f4f8') : '#3a5068',
+      transition: 'all 0.12s',
+    }}>
+      {icon && <span style={{ fontSize: 10 }}>{icon}</span>}
+      {accent && (
+        <span style={{
+          width: 12, height: 12, borderRadius: 3,
+          background: active ? '#00d4aa' : 'transparent',
+          border: `1.5px solid ${active ? '#00d4aa' : '#3a5068'}`,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        }}>
+          {active && <span style={{ fontSize: 8, color: '#06111a', fontWeight: 900 }}>✓</span>}
+        </span>
+      )}
+      {label}
+    </button>
   );
 }
