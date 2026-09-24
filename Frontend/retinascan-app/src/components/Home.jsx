@@ -3,7 +3,7 @@ import { allPatients } from '../data.js';
 
 // ── Derived stats from real data ────────────────────────────────────────────
 const screeningsToday   = allPatients.length;
-const pendingReview     = allPatients.filter(p => p.severity >= 2).length;
+const pendingReview     = allPatients.filter(p => p.severity >= 3).length;
 const referableCount    = allPatients.filter(p => p.severity >= 2).length;
 const lowConfidence     = allPatients.filter(p => p.confidence < 90).length;
 
@@ -60,15 +60,13 @@ function ModuleCard({ icon, title, subtitle, accent, onClick, badge, stats }) {
         display: 'flex',
         flexDirection: 'column',
         padding: '32px',
-        borderRadius: '20px',
-        background: hovered ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
-        border: `1px solid ${hovered ? accent + '50' : 'rgba(255,255,255,0.08)'}`,
+        borderRadius: '12px',
+        background: '#ffffff',
+        border: '1px solid #e2e8f0',
         borderTop: `3px solid ${accent}`,
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
-        boxShadow: hovered ? `0 8px 40px ${accent}20, 0 20px 60px rgba(0,0,0,0.3)` : '0 4px 20px rgba(0,0,0,0.2)',
-        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+        boxShadow: hovered ? '0 4px 12px rgba(0,0,0,0.1)' : '0 1px 3px rgba(0,0,0,0.06)',
+        transition: 'all 0.2s ease',
         textAlign: 'left',
         position: 'relative',
         overflow: 'hidden',
@@ -109,13 +107,13 @@ function ModuleCard({ icon, title, subtitle, accent, onClick, badge, stats }) {
 
       <h2 style={{
         margin: '0 0 8px', fontSize: 20, fontWeight: 800,
-        color: '#f0f6ff', fontFamily: 'Manrope, Inter, sans-serif',
+        color: '#0f172a', fontFamily: 'Manrope, Inter, sans-serif',
         letterSpacing: '-0.01em',
       }}>{title}</h2>
 
       <p style={{
         margin: '0 0 24px', fontSize: 13, lineHeight: 1.6,
-        color: '#8fa3bb',
+        color: '#64748b',
       }}>{subtitle}</p>
 
       {/* Mini stats */}
@@ -127,7 +125,7 @@ function ModuleCard({ icon, title, subtitle, accent, onClick, badge, stats }) {
                 fontFamily: 'JetBrains Mono, monospace', fontSize: 20, fontWeight: 700,
                 color: s.color || accent, lineHeight: 1,
               }}>{s.value}</div>
-              <div style={{ fontSize: 11, color: '#4d6278', marginTop: 3 }}>{s.label}</div>
+              <div style={{ fontSize: 11, color: '#64748b', marginTop: 3 }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -136,7 +134,7 @@ function ModuleCard({ icon, title, subtitle, accent, onClick, badge, stats }) {
       {/* Arrow */}
       <div style={{
         position: 'absolute', bottom: 28, right: 28,
-        color: hovered ? accent : '#4d6278',
+        color: hovered ? accent : '#64748b',
         fontSize: 20, transition: 'all 0.2s',
         transform: hovered ? 'translateX(3px)' : 'translateX(0)',
       }}>→</div>
@@ -150,8 +148,9 @@ function StatChip({ label, value, color, icon }) {
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
       padding: '12px 20px', borderRadius: 12,
-      background: 'rgba(255,255,255,0.03)',
-      border: '1px solid rgba(255,255,255,0.08)',
+      background: '#ffffff',
+      border: '1px solid #e2e8f0',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
     }}>
       <span style={{ fontSize: 18, opacity: 0.8 }}>{icon}</span>
       <div>
@@ -159,7 +158,7 @@ function StatChip({ label, value, color, icon }) {
           fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 800,
           color: color, lineHeight: 1,
         }}>{value}</div>
-        <div style={{ fontSize: 11, color: '#4d6278', marginTop: 2 }}>{label}</div>
+        <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{label}</div>
       </div>
     </div>
   );
@@ -182,8 +181,8 @@ export default function Home({ navigate }) {
   return (
     <main style={{
       minHeight: '100vh',
-      background: '#030c14',
-      color: '#f0f6ff',
+      background: '#f8fafc',
+      color: '#0f172a',
       fontFamily: 'Inter, sans-serif',
       position: 'relative',
       overflow: 'hidden',
@@ -191,46 +190,46 @@ export default function Home({ navigate }) {
       {/* Dot grid bg */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px)',
         backgroundSize: '28px 28px',
       }} />
 
       {/* Ambient glow orbs */}
-      <div style={{ position: 'absolute', top: -200, left: '10%', width: 600, height: 600, borderRadius: '50%', background: 'rgba(0,212,170,0.04)', filter: 'blur(100px)', pointerEvents: 'none', zIndex: 0 }} />
-      <div style={{ position: 'absolute', bottom: -100, right: '5%', width: 400, height: 400, borderRadius: '50%', background: 'rgba(34,211,238,0.04)', filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'absolute', top: -200, left: '10%', width: 600, height: 600, borderRadius: '50%', background: 'rgba(3,105,161,0.04)', filter: 'blur(100px)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'absolute', bottom: -100, right: '5%', width: 400, height: 400, borderRadius: '50%', background: 'rgba(2,132,199,0.04)', filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0 }} />
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 40px 60px', position: 'relative', zIndex: 1 }}>
 
         {/* ── Header strip ── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '28px 0 40px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+          padding: '28px 0 40px', borderBottom: '1px solid #e2e8f0',
           marginBottom: 48,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {/* Logo eye SVG */}
             <div style={{
               width: 48, height: 48, borderRadius: 14,
-              background: 'rgba(0,212,170,0.12)', border: '1px solid rgba(0,212,170,0.3)',
+              background: 'rgba(3,105,161,0.08)', border: '1px solid rgba(3,105,161,0.3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-                <ellipse cx="13" cy="13" rx="11" ry="7" stroke="#00d4aa" strokeWidth="1.8"/>
-                <circle cx="13" cy="13" r="4" stroke="#00d4aa" strokeWidth="1.8"/>
-                <circle cx="13" cy="13" r="2" fill="#00d4aa"/>
+                <ellipse cx="13" cy="13" rx="11" ry="7" stroke="#0369a1" strokeWidth="1.8"/>
+                <circle cx="13" cy="13" r="4" stroke="#0369a1" strokeWidth="1.8"/>
+                <circle cx="13" cy="13" r="2" fill="#0369a1"/>
               </svg>
             </div>
             <div>
-              <div style={{ fontFamily: 'Manrope, sans-serif', fontSize: 20, fontWeight: 800, color: '#f0f6ff', letterSpacing: '-0.01em' }}>RetinaScan XAI</div>
-              <div style={{ fontSize: 11, color: '#4d6278', fontFamily: 'JetBrains Mono, monospace' }}>SIH 26038 · MathWorks · Clinical Edition</div>
+              <div style={{ fontFamily: 'Manrope, sans-serif', fontSize: 20, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.01em' }}>RetinaScan XAI</div>
+              <div style={{ fontSize: 11, color: '#64748b', fontFamily: 'JetBrains Mono, monospace' }}>SIH 26038 · MathWorks · Clinical Edition</div>
             </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
             {/* System time */}
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 18, fontWeight: 700, color: '#f0f6ff' }}>{timeStr}</div>
-              <div style={{ fontSize: 11, color: '#4d6278' }}>{dateStr} · PHC Mandawar, Alwar</div>
+              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 18, fontWeight: 700, color: '#0f172a' }}>{timeStr}</div>
+              <div style={{ fontSize: 11, color: '#64748b' }}>{dateStr} · PHC Mandawar, Alwar</div>
             </div>
             {/* Online badge */}
             <div style={{
@@ -252,11 +251,11 @@ export default function Home({ navigate }) {
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             padding: '5px 14px', borderRadius: 20, marginBottom: 16,
-            background: 'rgba(0,212,170,0.08)', border: '1px solid rgba(0,212,170,0.2)',
-            fontSize: 11, fontWeight: 600, color: '#00d4aa',
+            background: 'rgba(3,105,161,0.08)', border: '1px solid rgba(3,105,161,0.2)',
+            fontSize: 11, fontWeight: 600, color: '#0369a1',
             fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.05em',
           }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#00d4aa' }} />
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#0369a1' }} />
             SMART INDIA HACKATHON 2026 · PROBLEM ID SIH26038
           </div>
 
@@ -267,12 +266,12 @@ export default function Home({ navigate }) {
             fontWeight: 900,
             letterSpacing: '-0.03em',
             lineHeight: 1.1,
-            color: '#f0f6ff',
+            color: '#0f172a',
             maxWidth: 680,
           }}>
             AI-Powered{' '}
             <span style={{
-              background: 'linear-gradient(135deg, #00d4aa, #22d3ee)',
+              background: 'linear-gradient(135deg, #0369a1, #0284c7)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -282,7 +281,7 @@ export default function Home({ navigate }) {
             Screening
           </h1>
 
-          <p style={{ margin: 0, fontSize: 16, color: '#8fa3bb', maxWidth: 560, lineHeight: 1.7 }}>
+          <p style={{ margin: 0, fontSize: 16, color: '#64748b', maxWidth: 560, lineHeight: 1.7 }}>
             Explainable AI for rural India PHCs — ResNet-50 with Grad-CAM++. 
             Detects all 5 ICDR grades in under 2 seconds, offline.
           </p>
@@ -292,22 +291,23 @@ export default function Home({ navigate }) {
         <div style={{
           display: 'flex', gap: 16, marginBottom: 48,
           padding: '20px 24px', borderRadius: 16,
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)',
+          background: '#ffffff', border: '1px solid #e2e8f0',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.06)'
         }}>
           <div style={{ flex: 1, display: 'flex', gap: 24 }}>
-            <StatChip icon="📋" label="Screenings Today" value={screeningsToday} color="#22d3ee" />
-            <div style={{ width: 1, background: 'rgba(255,255,255,0.07)' }} />
+            <StatChip icon="📋" label="Screenings Today" value={screeningsToday} color="#0284c7" />
+            <div style={{ width: 1, background: '#e2e8f0' }} />
             <StatChip icon="⏳" label="Pending Review" value={pendingReview} color="#f59e0b" />
-            <div style={{ width: 1, background: 'rgba(255,255,255,0.07)' }} />
+            <div style={{ width: 1, background: '#e2e8f0' }} />
             <StatChip icon="🔴" label="Referable Cases" value={referableCount} color="#ea580c" />
-            <div style={{ width: 1, background: 'rgba(255,255,255,0.07)' }} />
+            <div style={{ width: 1, background: '#e2e8f0' }} />
             <StatChip icon="⚠" label="Low Confidence" value={lowConfidence} color="#a855f7" />
           </div>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '0 16px',
-            fontSize: 11, color: '#4d6278', fontFamily: 'JetBrains Mono, monospace',
-            borderLeft: '1px solid rgba(255,255,255,0.07)',
+            fontSize: 11, color: '#64748b', fontFamily: 'JetBrains Mono, monospace',
+            borderLeft: '1px solid #e2e8f0',
           }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', flexShrink: 0 }} />
             All data from<br />allPatients[ ]
@@ -318,7 +318,7 @@ export default function Home({ navigate }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 48 }}>
           <ModuleCard
             icon={<IconCapture />}
-            accent="#00d4aa"
+            accent="#0369a1"
             title="Point-of-Care Acquisition"
             subtitle="Capture and screen a new patient fundus image at the PHC. Runs fully offline — no cloud required."
             badge="Primary Flow"
@@ -331,7 +331,7 @@ export default function Home({ navigate }) {
 
           <ModuleCard
             icon={<IconPACS />}
-            accent="#22d3ee"
+            accent="#0284c7"
             title="Clinician Diagnostic PACS"
             subtitle="Review AI-flagged cases, examine Grad-CAM heatmaps, annotate lesion findings, and issue referrals."
             badge="Review Queue"
@@ -360,10 +360,11 @@ export default function Home({ navigate }) {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '16px 24px', borderRadius: 12,
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+          background: '#ffffff', border: '1px solid #e2e8f0',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
           fontSize: 12,
         }}>
-          <div style={{ display: 'flex', gap: 24, color: '#4d6278', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>
+          <div style={{ display: 'flex', gap: 24, color: '#64748b', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>
             <span>ResNet-50 v2.4.1</span>
             <span>·</span>
             <span>Grad-CAM++ XAI</span>
@@ -374,7 +375,7 @@ export default function Home({ navigate }) {
             <span>·</span>
             <span>MathWorks Toolkit Enabled</span>
           </div>
-          <div style={{ fontSize: 11, color: '#4d6278', fontFamily: 'JetBrains Mono, monospace' }}>
+          <div style={{ fontSize: 11, color: '#64748b', fontFamily: 'JetBrains Mono, monospace' }}>
             Press Ctrl+Shift+R to reset demo
           </div>
         </div>

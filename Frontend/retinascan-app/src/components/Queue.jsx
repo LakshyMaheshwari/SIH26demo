@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const G = { BG: '#030c14', CARD: 'rgba(255,255,255,0.04)', BORDER: 'rgba(255,255,255,0.08)', TEAL: '#00d4aa', TEXT: '#f0f6ff', SUB: '#8fa3bb', MUTED: '#4d6278' };
+const G = { BG: '#f8fafc', CARD: '#ffffff', BORDER: '#e2e8f0', TEAL: '#0369a1', TEXT: '#0f172a', SUB: '#334155', MUTED: '#64748b' };
 
 const SEV_COLORS = {
   0: { color: '#34d399', bg: 'rgba(52,211,153,0.1)',  border: 'rgba(52,211,153,0.25)',  dot: '#34d399', label: 'Level 0 — No DR' },
@@ -68,7 +68,7 @@ export default function Queue({ navigate, patient, severity = 2, selectedEye = '
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <span style={{ fontSize: 11, fontWeight: 600, color: G.TEAL, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'JetBrains Mono, monospace' }}>Tele-Ophthalmology Triage Pipeline</span>
-              <span style={{ padding: '2px 8px', borderRadius: 10, background: 'rgba(0,212,170,0.08)', border: '1px solid rgba(0,212,170,0.2)', fontSize: 10, fontWeight: 700, color: G.TEAL }}>Tier 1 Priority</span>
+              <span style={{ padding: '2px 8px', borderRadius: 10, background: 'rgba(3,105,161,0.08)', border: '1px solid rgba(3,105,161,0.2)', fontSize: 10, fontWeight: 700, color: G.TEAL }}>Tier 1 Priority</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <h1 style={{ margin: 0, fontFamily: 'Manrope, sans-serif', fontSize: 28, fontWeight: 800, color: G.TEXT, letterSpacing: '-0.01em' }}>Review Queue</h1>
@@ -80,13 +80,13 @@ export default function Queue({ navigate, patient, severity = 2, selectedEye = '
           </div>
 
           {/* Tab pills */}
-          <div style={{ display: 'flex', gap: 3, background: 'rgba(255,255,255,0.04)', border: `1px solid ${G.BORDER}`, borderRadius: 12, padding: 4 }}>
+          <div style={{ display: 'flex', gap: 3, background: '#f1f5f9', border: `1px solid ${G.BORDER}`, borderRadius: 12, padding: 4 }}>
             {tabs.map(t => (
               <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
                 padding: '7px 14px', borderRadius: 9, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none',
-                background: activeTab === t.key ? 'rgba(0,212,170,0.12)' : 'transparent',
+                background: activeTab === t.key ? 'rgba(3,105,161,0.12)' : 'transparent',
                 color: activeTab === t.key ? G.TEAL : G.MUTED,
-                boxShadow: activeTab === t.key ? 'inset 0 0 0 1px rgba(0,212,170,0.25)' : 'none',
+                boxShadow: activeTab === t.key ? 'inset 0 0 0 1px rgba(3,105,161,0.25)' : 'none',
                 transition: 'all 0.15s',
               }}>
                 {t.label}
@@ -96,9 +96,9 @@ export default function Queue({ navigate, patient, severity = 2, selectedEye = '
         </div>
 
         {/* Table */}
-        <div style={{ background: G.CARD, border: `1px solid ${G.BORDER}`, borderRadius: 18, overflow: 'hidden', backdropFilter: 'blur(20px)' }}>
+        <div style={{ background: G.CARD, border: `1px solid ${G.BORDER}`, borderRadius: 18, overflow: 'hidden', backdropFilter: 'blur(20px)', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05)' }}>
           {/* Header row */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 2fr 1fr', gap: 16, padding: '14px 24px', background: 'rgba(255,255,255,0.03)', borderBottom: `1px solid ${G.BORDER}`, fontSize: 10, fontWeight: 600, color: G.MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'JetBrains Mono, monospace' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 2fr 1fr', gap: 16, padding: '14px 24px', background: '#f1f5f9', borderBottom: `1px solid ${G.BORDER}`, fontSize: 10, fontWeight: 600, color: G.MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'JetBrains Mono, monospace' }}>
             <div>Patient Demographics</div>
             <div>Screening Center & Hardware</div>
             <div>AI ICDR Grade</div>
@@ -106,16 +106,16 @@ export default function Queue({ navigate, patient, severity = 2, selectedEye = '
           </div>
 
           {/* PRIMARY ROW */}
-          <div style={{ borderBottom: `1px solid ${G.BORDER}`, background: 'rgba(0,212,170,0.04)' }}>
+          <div style={{ borderBottom: `1px solid ${G.BORDER}`, background: 'rgba(3,105,161,0.04)' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 2fr 1fr', gap: 16, padding: '20px 24px', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(3,105,161,0.1)', border: '1px solid rgba(3,105,161,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <span className="material-symbols-outlined" style={{ color: G.TEAL, fontSize: 22 }}>person</span>
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 13, fontWeight: 700, color: G.TEXT }}>{name}</span>
-                    <span style={{ padding: '1px 6px', borderRadius: 5, background: 'rgba(0,212,170,0.15)', border: '1px solid rgba(0,212,170,0.3)', fontSize: 9, fontWeight: 700, color: G.TEAL, fontFamily: 'JetBrains Mono, monospace' }}>ACTIVE</span>
+                    <span style={{ padding: '1px 6px', borderRadius: 5, background: 'rgba(3,105,161,0.15)', border: '1px solid rgba(3,105,161,0.3)', fontSize: 9, fontWeight: 700, color: G.TEAL, fontFamily: 'JetBrains Mono, monospace' }}>ACTIVE</span>
                   </div>
                   <div style={{ fontSize: 11, color: G.MUTED, fontFamily: 'JetBrains Mono, monospace', marginTop: 2 }}>{patient?.id || '#DR-88219'} · {patient?.age || 58}Y / {patient?.gender || 'F'}</div>
                 </div>
@@ -144,7 +144,7 @@ export default function Queue({ navigate, patient, severity = 2, selectedEye = '
             </div>
 
             {/* Telemetry snippet */}
-            <div style={{ padding: '10px 24px', borderTop: `1px solid ${G.BORDER}`, background: 'rgba(0,212,170,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ padding: '10px 24px', borderTop: `1px solid ${G.BORDER}`, background: 'rgba(3,105,161,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span className="material-symbols-outlined" style={{ color: G.TEAL, fontSize: 17 }}>psychology</span>
                 <span style={{ fontSize: 12, color: G.MUTED }}><strong style={{ color: G.TEXT }}>AI Telemetry:</strong> Microvascular remodeling detected. Immediate tele-ophthalmology verification recommended.</span>
@@ -157,29 +157,29 @@ export default function Queue({ navigate, patient, severity = 2, selectedEye = '
           {secondaryRows.map((row, i) => {
             const rs = SEV_COLORS[row.sev];
             return (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 2fr 1fr', gap: 16, padding: '18px 24px', alignItems: 'center', borderBottom: i === 0 ? `1px solid ${G.BORDER}` : 'none' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 38, height: 38, borderRadius: 10, background: G.CARD, border: `1px solid ${G.BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: G.MUTED, fontFamily: 'JetBrains Mono, monospace', flexShrink: 0 }}>{row.init}</div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: G.TEXT }}>{row.name}</div>
-                    <div style={{ fontSize: 11, color: G.MUTED, fontFamily: 'JetBrains Mono, monospace', marginTop: 2 }}>{row.id} · {row.age}</div>
-                  </div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: G.TEXT }}>{row.loc}</div>
-                  <div style={{ fontSize: 11, color: G.MUTED, marginTop: 2 }}>{row.hw}</div>
-                </div>
-                <div>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 8, background: rs.bg, border: `1px solid ${rs.border}`, fontSize: 11, fontWeight: 600, color: rs.color }}>
-                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: rs.dot }} />
-                    {rs.label}
-                  </span>
-                  <div style={{ fontSize: 11, color: G.MUTED, fontFamily: 'JetBrains Mono, monospace', marginTop: 4 }}>Conf: {row.conf}</div>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <span style={{ padding: '5px 12px', borderRadius: 8, background: G.CARD, border: `1px solid ${G.BORDER}`, fontSize: 11, fontWeight: 600, color: row.statusColor }}>{row.status}</span>
-                </div>
-              </div>
+               <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 2fr 1fr', gap: 16, padding: '18px 24px', alignItems: 'center', borderBottom: i === 0 ? `1px solid ${G.BORDER}` : 'none' }}>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                   <div style={{ width: 38, height: 38, borderRadius: 10, background: G.CARD, border: `1px solid ${G.BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: G.MUTED, fontFamily: 'JetBrains Mono, monospace', flexShrink: 0 }}>{row.init}</div>
+                   <div>
+                     <div style={{ fontSize: 13, fontWeight: 600, color: G.TEXT }}>{row.name}</div>
+                     <div style={{ fontSize: 11, color: G.MUTED, fontFamily: 'JetBrains Mono, monospace', marginTop: 2 }}>{row.id} · {row.age}</div>
+                   </div>
+                 </div>
+                 <div>
+                   <div style={{ fontSize: 12, fontWeight: 600, color: G.TEXT }}>{row.loc}</div>
+                   <div style={{ fontSize: 11, color: G.MUTED, marginTop: 2 }}>{row.hw}</div>
+                 </div>
+                 <div>
+                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 8, background: rs.bg, border: `1px solid ${rs.border}`, fontSize: 11, fontWeight: 600, color: rs.color }}>
+                     <span style={{ width: 5, height: 5, borderRadius: '50%', background: rs.dot }} />
+                     {rs.label}
+                   </span>
+                   <div style={{ fontSize: 11, color: G.MUTED, fontFamily: 'JetBrains Mono, monospace', marginTop: 4 }}>Conf: {row.conf}</div>
+                 </div>
+                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                   <span style={{ padding: '5px 12px', borderRadius: 8, background: G.CARD, border: `1px solid ${G.BORDER}`, fontSize: 11, fontWeight: 600, color: row.statusColor }}>{row.status}</span>
+                 </div>
+               </div>
             );
           })}
         </div>
@@ -187,8 +187,8 @@ export default function Queue({ navigate, patient, severity = 2, selectedEye = '
         {/* Metric tiles */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
           {metrics.map(item => (
-            <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 18px', borderRadius: 14, background: G.CARD, border: `1px solid ${G.BORDER}`, backdropFilter: 'blur(16px)' }}>
-              <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(0,212,170,0.08)', border: '1px solid rgba(0,212,170,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 18px', borderRadius: 14, background: G.CARD, border: `1px solid ${G.BORDER}` }}>
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(3,105,161,0.08)', border: '1px solid rgba(3,105,161,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <span className="material-symbols-outlined" style={{ color: G.TEAL, fontSize: 20 }}>{item.icon}</span>
               </div>
               <div>

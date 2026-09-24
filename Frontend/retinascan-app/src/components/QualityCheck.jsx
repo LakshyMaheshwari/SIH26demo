@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 const D = {
-  bg:    '#0a0f14', panel: '#111820', border: '#1e2d3d',
-  teal:  '#00d4aa', text: '#e8f4f8', sub: '#7a9ab0', muted: '#3a5068',
+  bg:    '#f8fafc', panel: '#ffffff', border: '#e2e8f0',
+  teal:  '#0369a1', text: '#0f172a', sub: '#334155', muted: '#64748b',
   mono:  'JetBrains Mono, "Courier New", monospace',
 };
 
@@ -26,6 +26,10 @@ const KEYFRAMES = `
   @keyframes iqa-fade-up {
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pin-pulse {
+    0% { transform: scale(1); opacity: 0.25; }
+    100% { transform: scale(1.5); opacity: 0; }
   }
 `;
 
@@ -87,7 +91,7 @@ export default function QualityCheck({ navigate }) {
         padding: '8px 20px', background: D.panel, borderBottom: `1px solid ${D.border}`,
         flexShrink: 0,
       }}>
-        <span style={{ width: 8, height: 8, borderRadius: '50%', background: allDone ? '#22c55e' : '#f59e0b', boxShadow: `0 0 6px ${allDone ? '#22c55e' : '#f59e0b'}`, transition: 'all 0.3s' }} />
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: allDone ? '#22c55e' : '#f59e0b', boxShadow: `0 0 6px ${allDone ? 'rgba(34,197,94,0.4)' : 'rgba(245,158,11,0.4)'}`, transition: 'all 0.3s' }} />
         <span style={{ fontFamily: D.mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: D.text }}>
           IMAGE QUALITY ASSESSMENT · IQA v2.1
         </span>
@@ -114,7 +118,7 @@ export default function QualityCheck({ navigate }) {
                 transition: 'border-color 0.5s',
               }}>
                 {allDone ? (
-                  <span style={{ fontSize: 36, animation: 'check-pop 0.4s ease both' }}>✓</span>
+                  <span style={{ fontSize: 36, color: '#22c55e', animation: 'check-pop 0.4s ease both' }}>✓</span>
                 ) : (
                   <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
                     <circle cx="20" cy="20" r="16" stroke={D.teal} strokeWidth="2" strokeOpacity="0.3"/>
@@ -151,8 +155,9 @@ export default function QualityCheck({ navigate }) {
               return (
                 <div key={key} style={{
                   padding: '18px 20px', borderRadius: 12,
-                  background: isDone ? 'rgba(0,212,170,0.05)' : 'rgba(255,255,255,0.03)',
-                  border: `1px solid ${isDone ? 'rgba(0,212,170,0.25)' : D.border}`,
+                  background: isDone ? 'rgba(3,105,161,0.05)' : '#ffffff',
+                  border: `1px solid ${isDone ? 'rgba(3,105,161,0.25)' : D.border}`,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
                   transition: 'all 0.3s',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -162,9 +167,9 @@ export default function QualityCheck({ navigate }) {
                         <span style={{
                           width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          background: isDone ? 'rgba(0,212,170,0.2)' : isActive ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.06)',
+                          background: isDone ? 'rgba(3,105,161,0.2)' : isActive ? 'rgba(245,158,11,0.2)' : '#f1f5f9',
                           border: `1.5px solid ${isDone ? D.teal : isActive ? '#f59e0b' : D.border}`,
-                          fontSize: 11,
+                          fontSize: 11, color: isDone ? D.teal : isActive ? '#f59e0b' : D.sub,
                           animation: isDone ? 'check-pop 0.4s ease both' : 'none',
                         }}>
                           {isDone ? '✓' : isActive ? '⟳' : '○'}
@@ -186,11 +191,11 @@ export default function QualityCheck({ navigate }) {
                   </div>
 
                   {/* Progress bar */}
-                  <div style={{ height: 4, background: 'rgba(255,255,255,0.07)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ height: 4, background: '#e2e8f0', borderRadius: 2, overflow: 'hidden' }}>
                     <div style={{
                       height: '100%',
                       width: `${pct}%`,
-                      background: isDone ? D.teal : 'linear-gradient(90deg, #00d4aa, #22d3ee)',
+                      background: isDone ? D.teal : 'linear-gradient(90deg, #0369a1, #0284c7)',
                       borderRadius: 2,
                       boxShadow: isDone ? `0 0 8px ${D.teal}60` : 'none',
                       transition: isDone ? 'box-shadow 0.3s, background 0.3s' : 'none',

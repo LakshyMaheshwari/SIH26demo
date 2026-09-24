@@ -1,10 +1,11 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
 fastapi
 uvicorn
 python-multipart
 torch
 torchvision
 pillow
-opencv-python
+opencv-python-headless
 pandas
 scikit-learn
 tqdm

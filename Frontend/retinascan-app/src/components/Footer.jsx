@@ -2,23 +2,26 @@ import React from 'react';
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-white border-t border-slate-100">
-      <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          <span className="font-semibold text-slate-600">RetinaScan XAI</span>
-          <span>·</span>
-          <span>DR Inference v2.4.1</span>
-          <span>·</span>
-          <span className="font-mono">140ms edge latency</span>
-        </div>
-        <div className="flex items-center gap-4 text-xs text-slate-400">
-          <span className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[14px] text-[#0B5563]">verified_user</span>
-            HIPAA · Offline-First
-          </span>
-          <span>SIH 2026 · MathWorks Track · Prototype only</span>
-        </div>
+    <footer style={{
+      width: '100%', background: '#ffffff', borderTop: '1px solid #e2e8f0',
+      padding: '12px 24px', display: 'flex', alignItems: 'center',
+      justifyContent: 'space-between', flexWrap: 'wrap', gap: 8,
+      fontFamily: 'Inter, sans-serif',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#64748b' }}>
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+        <span style={{ fontWeight: 600, color: '#334155' }}>RetinaScan XAI</span>
+        <span>·</span>
+        <span>DR Inference v2.4.1</span>
+        <span>·</span>
+        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>140ms edge latency</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, color: '#64748b' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ color: '#0B5563' }}>✓</span>
+          HIPAA · Offline-First
+        </span>
+        <span>SIH 2026 · MathWorks Track · Prototype only</span>
       </div>
     </footer>
   );

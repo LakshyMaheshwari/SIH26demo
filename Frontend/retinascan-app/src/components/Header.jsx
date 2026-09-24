@@ -13,10 +13,10 @@ export default function Header({ screen, navigate }) {
   return (
     <header style={{
       position: 'fixed', top: 0, width: '100%', zIndex: 50,
-      background: 'rgba(3, 12, 20, 0.85)',
+      background: '#ffffff',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      borderBottom: '1px solid rgba(255,255,255,0.07)',
+      borderBottom: '1px solid #e2e8f0',
     }}>
       <div style={{ maxWidth: 1600, margin: '0 auto', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
@@ -27,16 +27,16 @@ export default function Header({ screen, navigate }) {
         >
           <div style={{
             width: 34, height: 34, borderRadius: 10,
-            background: 'linear-gradient(135deg, #00d4aa, #0096b4)',
+            background: 'linear-gradient(135deg, #0369a1, #0284c7)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 16px rgba(0,212,170,0.4)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
             flexShrink: 0,
           }}>
-            <span className="material-symbols-outlined" style={{ color: '#020c12', fontSize: 18, fontVariationSettings: "'FILL' 1" }}>visibility</span>
+            <span className="material-symbols-outlined" style={{ color: '#ffffff', fontSize: 18, fontVariationSettings: "'FILL' 1" }}>visibility</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-            <span style={{ fontSize: 15, fontWeight: 700, color: '#f0f6ff', letterSpacing: '-0.01em', fontFamily: 'Manrope, sans-serif' }}>RetinaScan XAI</span>
-            <span style={{ fontSize: 10, color: '#00d4aa', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'JetBrains Mono, monospace' }}>Clinical · SIH 2026</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', letterSpacing: '-0.01em', fontFamily: 'Manrope, sans-serif' }}>RetinaScan XAI</span>
+            <span style={{ fontSize: 10, color: '#0369a1', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'JetBrains Mono, monospace' }}>Clinical · SIH 2026</span>
           </div>
         </div>
 
@@ -54,14 +54,14 @@ export default function Header({ screen, navigate }) {
                   borderRadius: 8,
                   fontSize: 12.5, fontWeight: 500, letterSpacing: '0.01em',
                   cursor: 'pointer', border: 'none',
-                  background: active ? 'rgba(0,212,170,0.12)' : 'transparent',
-                  color: active ? '#00d4aa' : 'rgba(255,255,255,0.5)',
-                  boxShadow: active ? 'inset 0 0 0 1px rgba(0,212,170,0.3)' : 'none',
+                  background: active ? 'rgba(3,105,161,0.08)' : 'transparent',
+                  color: active ? '#0369a1' : '#334155',
+                  boxShadow: active ? 'inset 0 0 0 1px rgba(3,105,161,0.3)' : 'none',
                   transition: 'all 0.15s',
                   fontFamily: 'Inter, sans-serif',
                 }}
-                onMouseEnter={e => { if (!active) { e.currentTarget.style.color = '#f0f6ff'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; } }}
-                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; e.currentTarget.style.background = 'transparent'; } }}
+                onMouseEnter={e => { if (!active) { e.currentTarget.style.color = '#0369a1'; e.currentTarget.style.background = 'rgba(3,105,161,0.04)'; } }}
+                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = '#334155'; e.currentTarget.style.background = 'transparent'; } }}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }}>{link.icon}</span>
                 {link.label}
@@ -82,11 +82,11 @@ export default function Header({ screen, navigate }) {
           </div>
           <div style={{
             width: 32, height: 32, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #00d4aa22, #22d3ee22)',
-            border: '1px solid rgba(0,212,170,0.3)',
+            background: 'linear-gradient(135deg, rgba(3,105,161,0.1), rgba(2,132,199,0.1))',
+            border: '1px solid rgba(3,105,161,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#00d4aa', fontFamily: 'JetBrains Mono, monospace' }}>DR</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#0369a1', fontFamily: 'JetBrains Mono, monospace' }}>DR</span>
           </div>
         </div>
       </div>

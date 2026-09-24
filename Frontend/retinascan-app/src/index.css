@@ -1,18 +1,18 @@
-/* RetinaScan XAI — Global Styles */
+/* RetinaScan XAI — Global Styles (Light Mode) */
 @import "tailwindcss";
 
 :root {
-  --bg-base: #030c14;
-  --bg-surface: #071520;
-  --bg-card: rgba(255,255,255,0.04);
-  --border-card: rgba(255,255,255,0.08);
-  --teal: #00d4aa;
-  --teal-dim: #00a085;
-  --teal-glow: rgba(0, 212, 170, 0.15);
-  --cyan: #22d3ee;
-  --text-primary: #f0f6ff;
-  --text-secondary: #8fa3bb;
-  --text-muted: #4d6278;
+  --bg-base: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --border-card: #e2e8f0;
+  --teal: #0369a1;
+  --teal-dim: #0284c7;
+  --teal-glow: rgba(3, 105, 161, 0.08);
+  --cyan: #0ea5e9;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -26,73 +26,85 @@ body {
 }
 ::-webkit-scrollbar { display: none; }
 
-/* ── Dot grid background ────────────────────────────────────────────── */
+/* ── Dot grid background ────────────────────────────────────────── */
 .dot-grid {
-  background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
-/* ── Glass card ─────────────────────────────────────────────────────── */
+/* ── Glass card ─────────────────────────────────────────────── */
 .glass {
   background: var(--bg-card);
   border: 1px solid var(--border-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .glass-teal {
-  background: rgba(0, 212, 170, 0.06);
-  border: 1px solid rgba(0, 212, 170, 0.2);
+  background: rgba(3, 105, 161, 0.04);
+  border: 1px solid rgba(3, 105, 161, 0.15);
   backdrop-filter: blur(16px);
 }
 .glass-hover:hover {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(0, 212, 170, 0.3);
-  box-shadow: 0 0 24px rgba(0, 212, 170, 0.08);
+  background: #f1f5f9;
+  border-color: rgba(3, 105, 161, 0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
 }
 
-/* ── Glow effects ───────────────────────────────────────────────────── */
-.glow-teal { box-shadow: 0 0 40px rgba(0, 212, 170, 0.25), 0 0 80px rgba(0, 212, 170, 0.1); }
-.glow-teal-sm { box-shadow: 0 0 16px rgba(0, 212, 170, 0.3); }
+/* ── Glow effects ──────────────────────────────────────────── */
+.glow-teal { box-shadow: 0 0 20px rgba(3, 105, 161, 0.15), 0 0 40px rgba(3, 105, 161, 0.05); }
+.glow-teal-sm { box-shadow: 0 0 12px rgba(3, 105, 161, 0.15); }
 .text-gradient {
-  background: linear-gradient(135deg, #ffffff 0%, #00d4aa 50%, #22d3ee 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #0369a1 50%, #0284c7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .text-gradient-subtle {
-  background: linear-gradient(135deg, #e2f0fb 0%, #00d4aa 100%);
+  background: linear-gradient(135deg, #334155 0%, #0369a1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ── Teal button ─────────────────────────────────────────────────────── */
+/* ── Teal button ──────────────────────────────────────────── */
 .btn-teal {
-  background: linear-gradient(135deg, #00d4aa, #00a3b4);
-  color: #020c12;
+  background: #0369a1;
+  color: #ffffff;
   font-weight: 700;
   border: none;
   cursor: pointer;
   transition: all 0.2s;
 }
 .btn-teal:hover {
-  background: linear-gradient(135deg, #00e5bb, #00b8cc);
-  box-shadow: 0 0 24px rgba(0, 212, 170, 0.4);
+  background: #0284c7;
+  box-shadow: 0 4px 12px rgba(3, 105, 161, 0.2);
   transform: translateY(-1px);
 }
 .btn-ghost {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: var(--text-primary);
+  background: #ffffff;
+  border: 1px solid #0369a1;
+  color: #0369a1;
   cursor: pointer;
   transition: all 0.2s;
 }
 .btn-ghost:hover {
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.2);
+  background: #f1f5f9;
+  border-color: #0284c7;
 }
 
-/* ── Animations ─────────────────────────────────────────────────────── */
+/* ── Upload preview pulse ──────────────────────────────────── */
+@keyframes preview-pop {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-preview-pop {
+  animation: preview-pop 0.3s ease both;
+}
+
+/* ── Animations ──────────────────────────────────────────── */
 @keyframes spin-slow {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -134,15 +146,16 @@ body {
 .animate-fade-up     { animation: fadeInUp 0.6s ease-out both; }
 .animate-float       { animation: float 4s ease-in-out infinite; }
 .animate-blink       { animation: blink-cursor 1.2s step-end infinite; }
+.animate-preview-pop { animation: preview-pop 0.3s ease both; }
 
-/* ── Severity badge colors ──────────────────────────────────────────── */
-.sev-0 { color: #34d399; background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.3); }
-.sev-1 { color: #fbbf24; background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.3); }
-.sev-2 { color: #fb923c; background: rgba(251,146,60,0.12); border-color: rgba(251,146,60,0.3); }
-.sev-3 { color: #f87171; background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.3); }
-.sev-4 { color: #c084fc; background: rgba(192,132,252,0.12); border-color: rgba(192,132,252,0.3); }
+/* ── Severity badge colors ────────────────────────────────── */
+.sev-0 { color: #22c55e; background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); }
+.sev-1 { color: #eab308; background: rgba(234,179,8,0.12); border-color: rgba(234,179,8,0.3); }
+.sev-2 { color: #f59e0b; background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); }
+.sev-3 { color: #ef4444; background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); }
+.sev-4 { color: #7c3aed; background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.3); }
 
-/* ── Orb gradient decorations ───────────────────────────────────────── */
+/* ── Orb gradient decorations ──────────────────────────────── */
 .orb {
   position: absolute;
   border-radius: 50%;

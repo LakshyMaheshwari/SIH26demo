@@ -9,6 +9,7 @@ import Canvas       from './components/Canvas.jsx';
 import Referral     from './components/Referral.jsx';
 import Admin        from './components/Admin.jsx';
 import { allPatients, demoPresets, imagePaths } from './data.js';
+import { API_BASE } from './config.js';
 
 // All valid screen names
 const SCREENS = ['home','upload','qualitycheck','processing','results','queue','canvas','referral','admin'];
@@ -78,7 +79,7 @@ export default function App() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await fetch('http://localhost:8000/upload', { method: 'POST', body: formData });
+      const response = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
 
       if (response.ok) {
         const data = await response.json();
@@ -128,14 +129,14 @@ export default function App() {
 
   // ── Screened with minimal top chrome ────────────────────────────────────
   return (
-    <div style={{ minHeight: '100vh', background: '#030c14', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100vh', background: '#f8fafc', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
       {/* Minimal nav bar for inner screens */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         height: 56,
-        background: 'rgba(3,12,20,0.9)',
-        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        background: 'rgba(255,255,255,0.95)',
+        borderBottom: '1px solid rgba(0,0,0,0.08)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -147,7 +148,7 @@ export default function App() {
         }}>
           <div style={{
             width: 32, height: 32, borderRadius: 9,
-            background: 'rgba(0,212,170,0.12)', border: '1px solid rgba(0,212,170,0.3)',
+            background: 'rgba(3,105,161,0.1)', border: '1px solid rgba(3,105,161,0.25)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -156,7 +157,7 @@ export default function App() {
               <circle cx="9" cy="9" r="1" fill="#00d4aa"/>
             </svg>
           </div>
-          <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: 15, fontWeight: 800, color: '#f0f6ff', letterSpacing: '-0.01em' }}>RetinaScan XAI</span>
+          <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: 15, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.01em' }}>RetinaScan XAI</span>
         </button>
 
         {/* Nav steps */}
@@ -172,9 +173,9 @@ export default function App() {
               all: 'unset', cursor: 'pointer',
               padding: '5px 14px', borderRadius: 8,
               fontSize: 12, fontWeight: 600,
-              color: screen === key ? '#00d4aa' : '#4d6278',
-              background: screen === key ? 'rgba(0,212,170,0.1)' : 'transparent',
-              border: screen === key ? '1px solid rgba(0,212,170,0.25)' : '1px solid transparent',
+              color: screen === key ? '#0369a1' : '#64748b',
+              background: screen === key ? 'rgba(3,105,161,0.08)' : 'transparent',
+              border: screen === key ? '1px solid rgba(3,105,161,0.2)' : '1px solid transparent',
               transition: 'all 0.15s',
             }}>{label}</button>
           ))}
@@ -184,15 +185,15 @@ export default function App() {
         {patient?.name && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12 }}>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ color: '#f0f6ff', fontWeight: 600 }}>{patient.fullName || patient.name}</div>
-              <div style={{ color: '#4d6278', fontFamily: 'JetBrains Mono, monospace', fontSize: 10 }}>{patient.id}</div>
+              <div style={{ color: '#0f172a', fontWeight: 600 }}>{patient.fullName || patient.name}</div>
+              <div style={{ color: '#64748b', fontFamily: 'JetBrains Mono, monospace', fontSize: 10 }}>{patient.id}</div>
             </div>
             {patient.severity != null && (
               <span style={{
                 padding: '3px 10px', borderRadius: 20,
-                background: ['rgba(34,197,94,0.15)','rgba(132,204,22,0.15)','rgba(245,158,11,0.15)','rgba(234,88,12,0.15)','rgba(220,38,38,0.15)'][patient.severity] || 'rgba(255,255,255,0.07)',
-                border: `1px solid ${['#22c55e','#84cc16','#f59e0b','#ea580c','#dc2626'][patient.severity] || '#4d6278'}50`,
-                color: ['#22c55e','#84cc16','#f59e0b','#ea580c','#dc2626'][patient.severity] || '#4d6278',
+                background: ['rgba(34,197,94,0.12)','rgba(132,204,22,0.12)','rgba(245,158,11,0.12)','rgba(234,88,12,0.12)','rgba(220,38,38,0.12)'][patient.severity] || 'rgba(0,0,0,0.05)',
+                border: `1px solid ${['#22c55e','#84cc16','#f59e0b','#ea580c','#dc2626'][patient.severity] || '#64748b'}30`,
+                color: ['#22c55e','#84cc16','#f59e0b','#ea580c','#dc2626'][patient.severity] || '#64748b',
                 fontSize: 11, fontWeight: 700,
               }}>
                 Level {patient.severity}
@@ -203,7 +204,7 @@ export default function App() {
       </nav>
 
       {/* Screen content */}
-      <div style={{ flex: 1, paddingTop: 56 }}>
+      <div style={{ flex: 1, paddingTop: 56, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
         {screen === 'upload'   && (
           <Upload
             navigate={navigate}

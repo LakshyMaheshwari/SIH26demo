@@ -125,6 +125,16 @@ async def upload_image(file: UploadFile = File(...)):
             return fallback
 
 
+@app.get("/")
+async def root():
+    return {
+        "service": "RetinaScan-XAI API",
+        "status": "online",
+        "mode": "real" if REAL_MODEL_AVAILABLE else "mock",
+        "endpoints": ["/health", "/upload", "/eval-report", "/images"]
+    }
+
+
 @app.get("/health")
 async def health():
     return {

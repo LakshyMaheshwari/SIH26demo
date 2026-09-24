@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const G = { BG: '#030c14', CARD: 'rgba(255,255,255,0.04)', BORDER: 'rgba(255,255,255,0.08)', TEAL: '#00d4aa', TEXT: '#f0f6ff', SUB: '#8fa3bb', MUTED: '#4d6278' };
+const G = { BG: '#f8fafc', CARD: '#ffffff', BORDER: '#e2e8f0', TEAL: '#0369a1', TEXT: '#0f172a', SUB: '#334155', MUTED: '#64748b' };
 
 const SEV_NAMES = {
   0: 'No Apparent Diabetic Retinopathy (Healthy)',
@@ -12,7 +12,7 @@ const SEV_NAMES = {
 
 function GlassCard({ children, style = {} }) {
   return (
-    <div style={{ background: G.CARD, border: `1px solid ${G.BORDER}`, borderRadius: 16, backdropFilter: 'blur(20px)', ...style }}>
+    <div style={{ background: G.CARD, border: `1px solid ${G.BORDER}`, borderRadius: 16, backdropFilter: 'blur(20px)', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05)', ...style }}>
       {children}
     </div>
   );
@@ -41,7 +41,7 @@ export default function Referral({ navigate, patient, severity = 2, selectedEye 
 
   return (
     <main style={{ minHeight: '100vh', paddingTop: 80, paddingBottom: 60, background: G.BG, color: G.TEXT, fontFamily: 'Inter, sans-serif', position: 'relative' }}>
-      <div className="orb" style={{ width: 500, height: 500, top: -100, right: -100, background: 'rgba(0,212,170,0.05)' }} />
+      <div className="orb" style={{ width: 500, height: 500, top: -100, right: -100, background: 'rgba(3,105,161,0.05)' }} />
       <div className="dot-grid" style={{ position: 'absolute', inset: 0, opacity: 0.4, pointerEvents: 'none', zIndex: 0 }} />
 
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 32px', display: 'flex', flexDirection: 'column', gap: 20, position: 'relative', zIndex: 1 }}>
@@ -76,12 +76,12 @@ export default function Referral({ navigate, patient, severity = 2, selectedEye 
           {/* Document header */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20, paddingBottom: 24, borderBottom: `1px solid ${G.BORDER}` }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
-              <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(3,105,161,0.1)', border: '1px solid rgba(3,105,161,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <span className="material-symbols-outlined" style={{ color: G.TEAL, fontSize: 28, fontVariationSettings: "'FILL' 1" }}>local_hospital</span>
               </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
-                  <span style={{ padding: '3px 10px', borderRadius: 6, background: 'rgba(0,212,170,0.08)', border: '1px solid rgba(0,212,170,0.2)', fontSize: 10, fontWeight: 700, color: G.TEAL, fontFamily: 'JetBrains Mono, monospace' }}>MoHFW · Tele-Ocular Core</span>
+                  <span style={{ padding: '3px 10px', borderRadius: 6, background: 'rgba(3,105,161,0.08)', border: '1px solid rgba(3,105,161,0.2)', fontSize: 10, fontWeight: 700, color: G.TEAL, fontFamily: 'JetBrains Mono, monospace' }}>MoHFW · Tele-Ocular Core</span>
                   <span style={{ fontSize: 11, color: G.MUTED, fontFamily: 'JetBrains Mono, monospace' }}>DISPATCH #{patient?.id?.replace('#', '') || 'RS-2026-0841'}</span>
                 </div>
                 <h1 style={{ margin: '0 0 6px', fontFamily: 'Manrope, sans-serif', fontSize: 24, fontWeight: 800, color: G.TEXT, letterSpacing: '-0.01em' }}>Clinical Tele-Ophthalmology Referral</h1>
@@ -90,7 +90,7 @@ export default function Referral({ navigate, patient, severity = 2, selectedEye 
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 20, background: isPriority ? 'rgba(251,146,60,0.1)' : 'rgba(0,212,170,0.08)', border: `1px solid ${isPriority ? 'rgba(251,146,60,0.3)' : 'rgba(0,212,170,0.2)'}`, fontSize: 11, fontWeight: 700, color: isPriority ? '#fb923c' : G.TEAL, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 20, background: isPriority ? 'rgba(251,146,60,0.1)' : 'rgba(3,105,161,0.08)', border: `1px solid ${isPriority ? 'rgba(251,146,60,0.3)' : 'rgba(3,105,161,0.2)'}`, fontSize: 11, fontWeight: 700, color: isPriority ? '#fb923c' : G.TEAL, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: isPriority ? '#fb923c' : G.TEAL }} />
                 {isPriority ? 'Priority Triage' : 'Standard Triage'}
               </span>
@@ -108,7 +108,7 @@ export default function Referral({ navigate, patient, severity = 2, selectedEye 
               <GlassCard style={{ padding: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, paddingBottom: 12, borderBottom: `1px solid ${G.BORDER}` }}>
                   <span style={{ fontSize: 10, fontWeight: 600, color: G.MUTED, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'JetBrains Mono, monospace' }}>Patient Identification</span>
-                  <span style={{ padding: '2px 8px', borderRadius: 6, background: 'rgba(0,212,170,0.08)', border: '1px solid rgba(0,212,170,0.2)', fontSize: 9, fontWeight: 700, color: G.TEAL, fontFamily: 'JetBrains Mono, monospace' }}>ABHA VERIFIED</span>
+                  <span style={{ padding: '2px 8px', borderRadius: 6, background: 'rgba(3,105,161,0.08)', border: '1px solid rgba(3,105,161,0.2)', fontSize: 9, fontWeight: 700, color: G.TEAL, fontFamily: 'JetBrains Mono, monospace' }}>ABHA VERIFIED</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <InfoRow label="Full Name" value={name} />
@@ -126,7 +126,7 @@ export default function Referral({ navigate, patient, severity = 2, selectedEye 
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {/* Grade box */}
-                  <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(0,212,170,0.05)', border: '1px solid rgba(0,212,170,0.15)' }}>
+                  <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(3,105,161,0.05)', border: '1px solid rgba(3,105,161,0.15)' }}>
                     <div style={{ fontSize: 9, fontWeight: 600, color: G.MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, fontFamily: 'JetBrains Mono, monospace' }}>Verified ICDR Grade</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: G.TEXT, marginBottom: 4 }}>{SEV_NAMES[currentSeverity] || SEV_NAMES[2]}</div>
                     <div style={{ fontSize: 11, fontFamily: 'JetBrains Mono, monospace', color: G.TEAL, fontWeight: 600 }}>ICDR Level {currentSeverity} · Bilateral ({currentEye} Primary Focus)</div>
@@ -136,7 +136,7 @@ export default function Referral({ navigate, patient, severity = 2, selectedEye 
                       { label: 'Retinal Biomarkers', val: patient?.findings || 'Microaneurysms detected in nasal quadrant', color: G.TEXT },
                       { label: 'Macular Edema Status', val: currentSeverity >= 2 ? 'CSME Suspicious (>500µm)' : 'Negative', color: currentSeverity >= 2 ? '#fb923c' : '#34d399' },
                     ].map(item => (
-                      <div key={item.label} style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: `1px solid ${G.BORDER}` }}>
+                      <div key={item.label} style={{ padding: '12px 14px', borderRadius: 10, background: '#f1f5f9', border: `1px solid ${G.BORDER}` }}>
                         <div style={{ fontSize: 10, color: G.MUTED, marginBottom: 5 }}>{item.label}</div>
                         <div style={{ fontSize: 12, fontWeight: 700, color: item.color, lineHeight: 1.4 }}>{item.val}</div>
                       </div>
@@ -161,7 +161,7 @@ export default function Referral({ navigate, patient, severity = 2, selectedEye 
                     <div style={{ fontSize: 12, color: G.SUB }}>District Hospital Alwar, Rajasthan</div>
                     <div style={{ fontSize: 11, fontFamily: 'JetBrains Mono, monospace', color: G.MUTED, marginTop: 3 }}>PIN: 301001 · +91 144 233 4511</div>
                   </div>
-                  <div style={{ padding: '14px', borderRadius: 12, background: 'rgba(0,212,170,0.06)', border: '1px solid rgba(0,212,170,0.2)' }}>
+                  <div style={{ padding: '14px', borderRadius: 12, background: 'rgba(3,105,161,0.06)', border: '1px solid rgba(3,105,161,0.2)' }}>
                     <div style={{ fontSize: 9, fontWeight: 600, color: G.TEAL, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4, fontFamily: 'JetBrains Mono, monospace' }}>Action Timeline</div>
                     <div style={{ fontSize: 16, fontWeight: 700, color: G.TEXT, marginBottom: 2 }}>Within 14 – 21 Days</div>
                     <div style={{ fontSize: 11, color: G.MUTED, fontFamily: 'JetBrains Mono, monospace' }}>Target Closes: 30-OCT-2026</div>
@@ -169,7 +169,7 @@ export default function Referral({ navigate, patient, severity = 2, selectedEye 
                   <div>
                     <div style={{ fontSize: 10, color: G.MUTED, marginBottom: 6 }}>Tele-Consultant Reviewer</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(0,212,170,0.08)', border: '1px solid rgba(0,212,170,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(3,105,161,0.08)', border: '1px solid rgba(3,105,161,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <span className="material-symbols-outlined" style={{ color: G.TEAL, fontSize: 18 }}>badge</span>
                       </div>
                       <div>
@@ -192,11 +192,11 @@ export default function Referral({ navigate, patient, severity = 2, selectedEye 
                   </div>
                 </div>
                 {/* Mini QR */}
-                <div style={{ width: 56, height: 56, background: '#f0f6ff', borderRadius: 8, padding: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" fill="#030c14">
-                    <rect x="5" y="5" width="28" height="28" /><rect x="10" y="10" width="18" height="18" fill="#f0f6ff"/><rect x="14" y="14" width="10" height="10" />
-                    <rect x="67" y="5" width="28" height="28"/><rect x="72" y="10" width="18" height="18" fill="#f0f6ff"/><rect x="76" y="14" width="10" height="10"/>
-                    <rect x="5" y="67" width="28" height="28"/><rect x="10" y="72" width="18" height="18" fill="#f0f6ff"/><rect x="14" y="76" width="10" height="10"/>
+                <div style={{ width: 56, height: 56, background: '#ffffff', border: `1px solid ${G.BORDER}`, borderRadius: 8, padding: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="100%" height="100%" viewBox="0 0 100 100" fill="#000000">
+                    <rect x="5" y="5" width="28" height="28" /><rect x="10" y="10" width="18" height="18" fill="#ffffff"/><rect x="14" y="14" width="10" height="10" />
+                    <rect x="67" y="5" width="28" height="28"/><rect x="72" y="10" width="18" height="18" fill="#ffffff"/><rect x="76" y="14" width="10" height="10"/>
+                    <rect x="5" y="67" width="28" height="28"/><rect x="10" y="72" width="18" height="18" fill="#ffffff"/><rect x="14" y="76" width="10" height="10"/>
                     <circle cx="50" cy="50" r="8"/><rect x="40" y="15" width="8" height="20"/><rect x="75" y="45" width="12" height="12"/><rect x="50" y="75" width="15" height="10"/>
                   </svg>
                 </div>
@@ -243,8 +243,8 @@ export default function Referral({ navigate, patient, severity = 2, selectedEye 
           position: 'fixed', bottom: 24, right: 24, zIndex: 100,
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '12px 20px', borderRadius: 12,
-          background: 'rgba(0,212,170,0.15)', border: '1px solid rgba(0,212,170,0.35)',
-          backdropFilter: 'blur(20px)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          background: 'rgba(3,105,161,0.15)', border: '1px solid rgba(3,105,161,0.35)',
+          backdropFilter: 'blur(20px)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
           fontSize: 13, fontWeight: 600, color: G.TEAL,
         }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: "'FILL' 1" }}>check_circle</span>

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { demoPresets, severityColors } from '../data.js';
 
 const D = {
-  bg:    '#0a0f14', panel: '#111820', border: '#1e2d3d',
-  teal:  '#00d4aa', text: '#e8f4f8', sub: '#7a9ab0', muted: '#3a5068',
+  bg:    '#f8fafc', panel: '#ffffff', border: '#e2e8f0',
+  teal:  '#0369a1', text: '#0f172a', sub: '#334155', muted: '#64748b',
   mono:  'JetBrains Mono, "Courier New", monospace',
 };
 
@@ -25,7 +25,7 @@ function Field({ label, value, onChange, type = 'text', readOnly = false, unit, 
         {options ? (
           <select value={value} onChange={e => onChange(e.target.value)} style={{
             width: '100%', padding: '9px 12px',
-            background: readOnly ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.05)',
+            background: readOnly ? '#f1f5f9' : '#ffffff',
             border: `1px solid ${D.border}`, borderRadius: 7,
             color: D.text, fontFamily: D.mono, fontSize: 12, outline: 'none',
             appearance: 'none',
@@ -39,13 +39,13 @@ function Field({ label, value, onChange, type = 'text', readOnly = false, unit, 
             readOnly={readOnly}
             style={{
               width: '100%', padding: '9px 12px',
-              background: readOnly ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.05)',
-              border: `1px solid ${readOnly ? D.border : '#2a4055'}`,
+              background: readOnly ? '#f1f5f9' : '#ffffff',
+              border: `1px solid ${readOnly ? D.border : '#cbd5e1'}`,
               borderRadius: 7, color: readOnly ? D.sub : D.text,
               fontFamily: D.mono, fontSize: 12, outline: 'none', boxSizing: 'border-box',
             }}
-            onFocus={e => { if (!readOnly) e.target.style.borderColor = 'rgba(0,212,170,0.5)'; }}
-            onBlur={e => { e.target.style.borderColor = readOnly ? D.border : '#2a4055'; }}
+            onFocus={e => { if (!readOnly) e.target.style.borderColor = 'rgba(3,105,161,0.5)'; }}
+            onBlur={e => { e.target.style.borderColor = readOnly ? D.border : '#cbd5e1'; }}
           />
         )}
         {unit && (
@@ -59,6 +59,13 @@ function Field({ label, value, onChange, type = 'text', readOnly = false, unit, 
   );
 }
 
+function isLikelyFundus(file) {
+  const validTypes = ['image/jpeg', 'image/png', 'image/tiff', 'image/jpg'];
+  if (!validTypes.includes(file.type)) return false;
+  if (file.size < 50000) return false; // <50KB probably not a fundus
+  return true;
+}
+
 export default function Upload({ navigate, onSelectPatient, handleUpload }) {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [patId] = useState(genId());
@@ -66,6 +73,8 @@ export default function Upload({ navigate, onSelectPatient, handleUpload }) {
     name: '', age: '', gender: 'Female', diabetesDuration: '', hba1c: '', eye: 'od',
   });
   const [dragOver, setDragOver] = useState(false);
+  const [uploadPreview, setUploadPreview] = useState(null);
+  const [uploadError, setUploadError] = useState('');
 
   function selectPreset(p) {
     setSelectedPatient(p);
@@ -100,17 +109,17 @@ export default function Upload({ navigate, onSelectPatient, handleUpload }) {
         padding: '8px 20px', background: D.panel, borderBottom: `1px solid ${D.border}`,
         flexShrink: 0,
       }}>
-        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e' }} />
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px rgba(34,197,94,0.4)' }} />
         <span style={{ fontFamily: D.mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: D.text }}>
           POINT-OF-CARE ACQUISITION · PATIENT INTAKE
         </span>
-        <span style={{ padding: '3px 10px', borderRadius: 5, background: 'rgba(255,255,255,0.05)', border: `1px solid ${D.border}`, fontFamily: D.mono, fontSize: 10, color: D.sub }}>
+        <span style={{ padding: '3px 10px', borderRadius: 5, background: '#f1f5f9', border: `1px solid ${D.border}`, fontFamily: D.mono, fontSize: 10, color: D.sub }}>
           PHC Mandawar · Alwar District, Rajasthan
         </span>
         <div style={{ flex: 1 }} />
         <button onClick={() => navigate('home')} style={{
           all: 'unset', cursor: 'pointer', padding: '5px 12px', borderRadius: 6,
-          background: 'rgba(255,255,255,0.04)', border: `1px solid ${D.border}`,
+          background: '#f1f5f9', border: `1px solid ${D.border}`,
           fontFamily: D.mono, fontSize: 10, color: D.sub,
         }}>← Home</button>
       </div>
@@ -120,7 +129,7 @@ export default function Upload({ navigate, onSelectPatient, handleUpload }) {
         {/* ════ LEFT: Intake form ════ */}
         <div style={{
           flex: '0 0 420px', padding: '28px 28px',
-          borderRight: `1px solid ${D.border}`,
+          borderRight: `1px solid ${D.border}`, background: '#ffffff',
           display: 'flex', flexDirection: 'column', gap: 20,
         }}>
           <div>
@@ -131,7 +140,7 @@ export default function Upload({ navigate, onSelectPatient, handleUpload }) {
           </div>
 
           {/* Auto ID */}
-          <div style={{ padding: '10px 14px', background: 'rgba(0,212,170,0.06)', border: '1px solid rgba(0,212,170,0.2)', borderRadius: 8 }}>
+          <div style={{ padding: '10px 14px', background: 'rgba(3,105,161,0.06)', border: '1px solid rgba(3,105,161,0.2)', borderRadius: 8 }}>
             <div style={{ fontFamily: D.mono, fontSize: 9, color: D.teal, letterSpacing: '0.1em', marginBottom: 4 }}>AUTO-GENERATED PATIENT ID</div>
             <div style={{ fontFamily: D.mono, fontSize: 16, fontWeight: 800, color: D.teal }}>{selectedPatient?.id || patId}</div>
           </div>
@@ -163,8 +172,8 @@ export default function Upload({ navigate, onSelectPatient, handleUpload }) {
                 <button key={e.key} onClick={() => setForm(f => ({ ...f, eye: e.key }))} style={{
                   all: 'unset', cursor: 'pointer', flex: 1,
                   padding: '10px 8px', borderRadius: 8, textAlign: 'center',
-                  background: form.eye === e.key ? 'rgba(0,212,170,0.12)' : 'rgba(255,255,255,0.03)',
-                  border: `1px solid ${form.eye === e.key ? 'rgba(0,212,170,0.4)' : D.border}`,
+                  background: form.eye === e.key ? 'rgba(3,105,161,0.08)' : '#ffffff',
+                  border: `1px solid ${form.eye === e.key ? 'rgba(3,105,161,0.4)' : D.border}`,
                 }}>
                   <div style={{ fontFamily: D.mono, fontSize: 14, fontWeight: 800, color: form.eye === e.key ? D.teal : D.sub }}>{e.label}</div>
                   <div style={{ fontFamily: D.mono, fontSize: 9, color: D.muted, marginTop: 3 }}>{e.sub}</div>
@@ -180,8 +189,8 @@ export default function Upload({ navigate, onSelectPatient, handleUpload }) {
             style={{
               all: 'unset', cursor: canStart ? 'pointer' : 'not-allowed',
               padding: '14px 20px', borderRadius: 10, textAlign: 'center',
-              background: canStart ? 'rgba(0,212,170,0.2)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${canStart ? 'rgba(0,212,170,0.5)' : D.border}`,
+              background: canStart ? 'rgba(3,105,161,0.1)' : '#f1f5f9',
+              border: `1px solid ${canStart ? 'rgba(3,105,161,0.5)' : D.border}`,
               fontFamily: D.mono, fontSize: 13, fontWeight: 700,
               color: canStart ? D.teal : D.muted,
               transition: 'all 0.15s',
@@ -216,9 +225,10 @@ export default function Upload({ navigate, onSelectPatient, handleUpload }) {
                   all: 'unset', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', gap: 16,
                   padding: '16px 18px', borderRadius: 12,
-                  background: isSelected ? `${sCol}12` : 'rgba(255,255,255,0.03)',
+                  background: isSelected ? `${sCol}12` : '#ffffff',
                   border: `1px solid ${isSelected ? sCol + '60' : D.border}`,
                   borderLeft: `4px solid ${sCol}`,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
                   transition: 'all 0.15s',
                 }}>
                   {/* Retina thumbnail */}
@@ -271,19 +281,58 @@ export default function Upload({ navigate, onSelectPatient, handleUpload }) {
             })}
           </div>
 
+          {/* Upload preview */}
+          {uploadPreview && (
+            <div style={{
+              padding: '16px', borderRadius: 12,
+              background: 'rgba(3,105,161,0.06)', border: '1px solid rgba(3,105,161,0.2)',
+              marginBottom: 16, textAlign: 'center',
+            }}>
+              <div style={{ fontFamily: D.mono, fontSize: 10, color: D.teal, fontWeight: 700, marginBottom: 8 }}>
+                ✓ Fundus image detected — ready for analysis
+              </div>
+              <img src={uploadPreview} alt="Preview" style={{
+                width: 120, height: 120, borderRadius: '50%', objectFit: 'cover',
+                border: '2px solid rgba(3,105,161,0.3)',
+              }} />
+              <div style={{ fontFamily: D.mono, fontSize: 9, color: D.muted, marginTop: 6 }}>
+                {uploadPreview.split(',')[0].split(';')[1]?.split('=')[1] || 'Uploaded image'}
+              </div>
+            </div>
+          )}
+
+          {/* Error message */}
+          {uploadError && (
+            <div style={{
+              padding: '12px 16px', borderRadius: 8,
+              background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.2)',
+              marginBottom: 16, fontSize: 12, color: '#dc2626', fontFamily: D.mono,
+            }}>
+              <span style={{ fontFamily: D.mono }}>{uploadError} — Please upload a retinal fundus image (JPG/PNG/TIFF, &gt;50KB)</span>
+            </div>
+          )}
+
           {/* Drop zone */}
           <div
             onDragOver={e => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={e => {
-              e.preventDefault(); setDragOver(false);
+              e.preventDefault(); setDragOver(false); setUploadError('');
               const file = e.dataTransfer.files[0];
-              if (file && handleUpload) handleUpload(file);
+              if (file) {
+                if (!isLikelyFundus(file)) {
+                  setUploadError('Not a recognized fundus format');
+                  return;
+                }
+                const url = URL.createObjectURL(file);
+                setUploadPreview(url);
+                if (handleUpload) handleUpload(file);
+              }
             }}
             style={{
               padding: '24px 20px', borderRadius: 12, textAlign: 'center',
               border: `2px dashed ${dragOver ? D.teal : D.border}`,
-              background: dragOver ? 'rgba(0,212,170,0.06)' : 'rgba(255,255,255,0.02)',
+              background: dragOver ? 'rgba(3,105,161,0.06)' : '#ffffff',
               transition: 'all 0.15s',
             }}
           >
@@ -291,17 +340,28 @@ export default function Upload({ navigate, onSelectPatient, handleUpload }) {
               Or drop a real fundus image here to run live inference
             </div>
             <div style={{ fontFamily: D.mono, fontSize: 10, color: D.muted }}>
-              JPG · PNG · TIFF · DICOM supported
+              JPG · PNG · TIFF · DICOM supported · Min 50KB
             </div>
             <label style={{
               display: 'inline-block', marginTop: 12,
               padding: '7px 18px', borderRadius: 7,
-              background: 'rgba(255,255,255,0.05)', border: `1px solid ${D.border}`,
+              background: '#f1f5f9', border: `1px solid ${D.border}`,
               fontFamily: D.mono, fontSize: 11, color: D.sub, cursor: 'pointer',
             }}>
               Browse File
               <input type="file" accept=".jpg,.jpeg,.png,.tiff,.dcm" style={{ display: 'none' }}
-                onChange={e => { const f = e.target.files[0]; if (f && handleUpload) handleUpload(f); }} />
+                onChange={e => {
+                  const f = e.target.files[0];
+                  if (f) {
+                    if (!isLikelyFundus(f)) {
+                      setUploadError('Invalid file type or size');
+                      return;
+                    }
+                    setUploadError('');
+                    setUploadPreview(URL.createObjectURL(f));
+                    if (handleUpload) handleUpload(f);
+                  }
+                }} />
             </label>
           </div>
         </div>

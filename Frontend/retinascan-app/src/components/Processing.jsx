@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 const D = {
-  bg:    '#0a0f14', panel: '#111820', border: '#1e2d3d',
-  teal:  '#00d4aa', text: '#e8f4f8', sub: '#7a9ab0', muted: '#3a5068',
+  bg:    '#f8fafc', panel: '#ffffff', border: '#e2e8f0',
+  teal:  '#0369a1', text: '#0f172a', sub: '#334155', muted: '#64748b',
   mono:  'JetBrains Mono, "Courier New", monospace',
 };
 
@@ -91,7 +91,7 @@ export default function Processing({ navigate, patient }) {
         padding: '8px 20px', background: D.panel, borderBottom: `1px solid ${D.border}`,
         flexShrink: 0,
       }}>
-        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 6px #f59e0b', animation: 'ring-pulse 1.2s infinite' }} />
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 6px rgba(245,158,11,0.5)', animation: 'ring-pulse 1.2s infinite' }} />
         <span style={{ fontFamily: D.mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: D.text }}>
           DEEPRETINA-v4 · INFERENCE PIPELINE
         </span>
@@ -116,7 +116,7 @@ export default function Processing({ navigate, patient }) {
             {/* Outer glow ring */}
             <div style={{
               position: 'absolute', inset: -12, borderRadius: '50%',
-              border: '2px solid rgba(0,212,170,0.15)',
+              border: '2px solid rgba(3,105,161,0.15)',
               animation: 'ring-pulse 2s infinite',
             }} />
             {/* Conic-gradient spinning ring */}
@@ -150,10 +150,11 @@ export default function Processing({ navigate, patient }) {
                 <div key={step.key} style={{
                   display: 'flex', alignItems: 'center', gap: 14,
                   padding: '14px 18px', borderRadius: 10,
-                  background: isDone  ? 'rgba(0,212,170,0.06)'
-                            : isActive ? 'rgba(255,255,255,0.05)'
-                            : 'rgba(255,255,255,0.02)',
-                  border: `1px solid ${isDone ? 'rgba(0,212,170,0.2)' : isActive ? 'rgba(255,255,255,0.1)' : D.border}`,
+                  background: isDone  ? 'rgba(3,105,161,0.06)'
+                            : isActive ? '#ffffff'
+                            : '#f1f5f9',
+                  border: `1px solid ${isDone ? 'rgba(3,105,161,0.2)' : isActive ? '#cbd5e1' : D.border}`,
+                  boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
                   transition: 'all 0.25s',
                   animation: isActive ? 'step-pop 0.2s ease both' : 'none',
                 }}>
@@ -162,9 +163,9 @@ export default function Processing({ navigate, patient }) {
                     width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 13,
-                    background: isDone  ? 'rgba(0,212,170,0.2)'
+                    background: isDone  ? 'rgba(3,105,161,0.2)'
                               : isActive ? 'rgba(245,158,11,0.15)'
-                              : 'rgba(255,255,255,0.04)',
+                              : '#ffffff',
                     border: `1.5px solid ${isDone ? D.teal : isActive ? '#f59e0b' : D.border}`,
                     color: isDone ? D.teal : isActive ? '#f59e0b' : D.muted,
                   }}>
@@ -203,11 +204,11 @@ export default function Processing({ navigate, patient }) {
               <span style={{ fontFamily: D.mono, fontSize: 10, color: D.muted }}>Inference pipeline</span>
               <span style={{ fontFamily: D.mono, fontSize: 10, color: D.teal, fontWeight: 700 }}>{pct}% complete</span>
             </div>
-            <div style={{ height: 4, background: 'rgba(255,255,255,0.07)', borderRadius: 2, overflow: 'hidden' }}>
+            <div style={{ height: 4, background: '#e2e8f0', borderRadius: 2, overflow: 'hidden' }}>
               <div style={{
                 height: '100%',
                 width: `${pct}%`,
-                background: `linear-gradient(90deg, ${D.teal}, #22d3ee)`,
+                background: `linear-gradient(90deg, ${D.teal}, #0284c7)`,
                 borderRadius: 2,
                 transition: 'width 0.5s ease',
                 boxShadow: `0 0 8px ${D.teal}60`,
