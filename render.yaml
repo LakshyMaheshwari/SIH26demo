@@ -12,6 +12,12 @@ services:
     rootDir: Frontend/retinascan-app
     buildCommand: npm install && npm run build
     staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: retinascan-backend
+          property: host
     routes:
       - type: rewrite
         source: /*
