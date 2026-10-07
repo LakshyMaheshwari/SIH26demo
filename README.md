@@ -1,487 +1,310 @@
 <div align="center">
 
-# 👁️ RetinaScan-XAI
+<img src="assets/banner.svg" alt="RetinaScan-XAI — Explainable AI for Diabetic Retinopathy Screening in Rural India" width="100%"/>
 
-### Explainable AI for Diabetic Retinopathy Screening in Rural India
+<br/>
 
-**Smart India Hackathon 2026 · Problem Statement SIH26038**
+[![Live Demo](https://img.shields.io/badge/▶_LIVE_DEMO-sih26demobigo.onrender.com-fd761a?style=for-the-badge)](https://sih26demobigo.onrender.com)
+[![Prototype Video](https://img.shields.io/badge/🎬_PROTOTYPE_VIDEO-Watch-003d48?style=for-the-badge)](https://drive.google.com/file/d/1aWLT6qsj1q2M6xzOUJSGMgxc2XnRagXq/view?usp=drive_link)
 
-<p>
-  <img src="https://img.shields.io/badge/SIH-2026-ff6b35?style=for-the-badge&logo=india&logoColor=white" alt="SIH 2026"/>
-  <img src="https://img.shields.io/badge/PS-SIH26038-0b7285?style=for-the-badge" alt="Problem Statement"/>
-  <img src="https://img.shields.io/badge/AI-Computer%20Vision-6c5ce7?style=for-the-badge" alt="AI"/>
-  <img src="https://img.shields.io/badge/Healthcare-MedTech-198754?style=for-the-badge" alt="MedTech"/>
-</p>
+![SIH 2026](https://img.shields.io/badge/SIH-2026-fd761a?style=flat-square)
+![Problem Statement](https://img.shields.io/badge/PS-SIH26038-003d48?style=flat-square)
+![Theme](https://img.shields.io/badge/Theme-MedTech-0b5563?style=flat-square)
+![Team](https://img.shields.io/badge/Team-TheBIG(O)_173175-fd761a?style=flat-square)
+<br/>
+![React](https://img.shields.io/badge/React-19-20232a?style=flat-square&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
+![MATLAB](https://img.shields.io/badge/MATLAB-0076A8?style=flat-square&logo=mathworks&logoColor=white)
+![FHIR R4](https://img.shields.io/badge/FHIR-R4-e8590c?style=flat-square)
+![ABDM](https://img.shields.io/badge/ABDM-Ready-138808?style=flat-square)
 
-<p>
-  <b>Offline-first • Explainable • Rural-ready • Specialist-assisted</b>
-</p>
+### 👁️ *Catch blindness before it starts. Even where the nearest eye doctor is hours away.*
 
-<p>
-  <a href="https://sih26demobigo.onrender.com">
-    <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Visit%20RetinaScan--XAI-0d6efd?style=for-the-badge" alt="Live Demo"/>
-  </a>
-  <a href="https://github.com/LakshyMaheshwari/SIH26demo">
-    <img src="https://img.shields.io/badge/💻%20GitHub-Source%20Code-181717?style=for-the-badge&logo=github" alt="GitHub"/>
-  </a>
-</p>
+[**The Problem**](#-the-problem) ·
+[**Our Solution**](#-our-solution) ·
+[**Innovation**](#-whats-different) ·
+[**Architecture**](#-architecture) ·
+[**Results**](#-results) ·
+[**Screens**](#-app-walkthrough) ·
+[**Run It**](#-quick-start) ·
+[**API**](#-api-reference) ·
+[**Impact**](#-impact) ·
+[**Roadmap**](#-roadmap--honest-notes)
 
 </div>
 
 ---
 
-## 🏆 Smart India Hackathon 2026
+## 🌾 The Problem
 
-|                       | Details                                                          |
-| --------------------- | ---------------------------------------------------------------- |
-| **Problem Statement** | SIH26038                                                         |
-| **Title**             | Explainable AI for Diabetic Retinopathy Screening in Rural India |
-| **Theme**             | MedTech                                                          |
-| **Category**          | Software                                                         |
-| **Team**              | TheBIG(O)                                                        |
-| **Team ID**           | 173175                                                           |
-| **Solution**          | RetinaScan-XAI                                                   |
+Meet **Ramesh**, a 52-year-old farmer. He has lived with diabetes for years and has never had an eye screening, because the nearest eye specialist is hours away at the district hospital. Ramesh stands for millions of people.
 
----
+<table>
+<tr>
+<td align="center" width="25%"><h2>77M+</h2>diabetic adults<br/><sub>India ranks <b>2nd</b> globally</sub></td>
+<td align="center" width="25%"><h2>18%</h2>develop diabetic retinopathy<br/><sub><b>9.2M+</b> at risk of vision loss</sub></td>
+<td align="center" width="25%"><h2>90%</h2>of blindness is preventable<br/><sub>if caught early</sub></td>
+<td align="center" width="25%"><h2>1 : 100,000</h2>ophthalmologist ratio<br/><sub>almost none in rural PHCs</sub></td>
+</tr>
+</table>
 
-## 🌍 The Problem
+**Why today's AI screening tools fail in the field:**
 
-Diabetic Retinopathy (DR) is one of the major causes of preventable vision loss. Early screening can dramatically improve outcomes, but rural communities face a combination of accessibility, specialist availability, image-quality, connectivity, and trust challenges.
-
-### The rural screening gap
-
-* 🏥 Limited access to ophthalmologists in rural healthcare facilities
-* 🚑 Patients may need to travel long distances for specialist screening
-* 📡 Internet-dependent AI systems can fail when connectivity is unreliable
-* 📷 Low-cost fundus cameras can produce blurry, poorly illuminated, or incomplete images
-* 🧠 Black-box AI predictions can be difficult for clinicians to trust
-* ⏱️ Manual specialist review does not scale to large screening volumes
-
-The result is a critical gap between **early detection** and **actual access to specialist-supported screening**.
+| 🚫 Barrier | What goes wrong |
+|---|---|
+| **Black-box models** | Doctors cannot see *why* the AI decided, so they don't trust it |
+| **Camera sensitivity** | Low-cost portable cameras give dim, blurry images that break standard algorithms |
+| **Cloud dependence** | Rural internet drops often, and the tool stops working with it |
+| **Patients can't travel** | No annual urban check-ups, and the care gap keeps growing |
 
 ---
 
-# 💡 Our Solution
+## 💡 Our Solution
 
-## RetinaScan-XAI
+**RetinaScan-XAI** is an **offline-first, explainable AI triage platform** for low-spec rural Primary Healthcare Centres (PHCs). A health worker captures a retinal (fundus) photo. The system checks image quality, grades diabetic retinopathy on the international **ICDR 0–4 scale**, and shows a **visual heatmap of the evidence** behind its decision. A remote ophthalmologist can then validate the case **in under 60 seconds**.
 
-RetinaScan-XAI is an **AI-assisted diabetic retinopathy screening and triage platform** designed for rural Primary Healthcare Centres (PHCs).
-
-Instead of simply returning:
-
-> **"DR detected."**
-
-the platform aims to answer:
-
-> **"What severity was detected, what evidence supports the prediction, and what should happen next?"**
-
-The system combines:
-
-**Fundus Image → Quality Check → AI Grading → Explainability → Specialist Queue → Referral**
+| Capability | How we deliver it |
+|---|---|
+| 🔌 **100% offline edge operation** | Runs on existing clinic laptops with no GPU and no internet. Encrypted local storage syncs to the ABDM Gateway (ABHA / FHIR) when connectivity returns |
+| 🔍 **Automated front-door IQA** | Checks focus, illumination and field-of-view in **under 1.5 s**. It auto-rejects ungradeable scans with clear retake feedback, or auto-enhances borderline ones with green-channel CLAHE |
+| 🧠 **Explainable grading** | Every prediction ships with a heatmap, so the doctor sees *where* the model looked and can accept or override it |
+| ⚡ **Rapid specialist triage** | Referable cases (Grade 2+) jump the queue. The reviewer sees ABHA-linked history, heatmaps and lesion overlays on one screen |
+| 🏛️ **ABDM / FHIR R4 ready** | Designed around ABHA identity and FHIR `DiagnosticReport` / `Observation` profiles for national interoperability |
 
 ---
 
-## ✨ What Makes RetinaScan-XAI Different?
+## ✨ What's Different
 
-### 1. 🔍 Explainable AI
+<table>
+<tr>
+<td width="33%" valign="top">
 
-The system is designed around **visual evidence**, not only a classification score.
+### 🧩 Multi-Technique Consensus XAI
+Instead of one heatmap, we **merge Grad-CAM, Occlusion and Saliency maps** into a single noise-filtered consensus map. It is correlated with lesion bounding boxes, so the doctor reviews evidence instead of pixels.
 
-XAI visualizations help reviewers understand where the model is focusing on the retinal image.
+</td>
+<td width="33%" valign="top">
 
-The project concept incorporates:
+### 🛡️ Memory-Guarded Edge Runtime
+A **single-worker FIFO concurrency guard** caps peak memory at **~3 GB RAM**, so budget clinic laptops don't crash under load. There is zero internet dependency and no cloud bill.
 
-* Grad-CAM
-* Occlusion-based explanation
-* Saliency visualization
-* Lesion/evidence correlation
-* Visual overlays for specialist review
+</td>
+<td width="33%" valign="top">
 
-This addresses one of the biggest barriers to clinical AI adoption:
+### 🏗️ 5-Layer Decoupled Architecture
+The clinical engine is separated from the UI by **FastAPI middleware and an ABDM wrapper**. This keeps it modular, interoperable and fast to use.
 
-> **Trust.**
-
----
-
-### 2. 📷 Automated Image Quality Assessment
-
-Poor-quality retinal photographs can produce unreliable predictions.
-
-RetinaScan-XAI therefore introduces an image-quality gate before relying on the AI prediction.
-
-The proposed pipeline considers:
-
-* Focus / sharpness
-* Illumination
-* Field of view
-* Image usability
-* Enhancement for borderline images
-* Recapture guidance
-
-The SIH solution proposes green-channel processing and CLAHE-based enhancement for suitable borderline scans.
+</td>
+</tr>
+</table>
 
 ---
 
-### 3. 🧠 Five-Level DR Grading
+## 🏗️ Architecture
 
-The prototype follows the standard five-level diabetic-retinopathy classification used by the project:
+### Target system (as designed in our SIH submission)
 
-| Level | Classification   | Suggested Action            |
-| ----: | ---------------- | --------------------------- |
-| **0** | No Apparent DR   | Routine screening           |
-| **1** | Mild NPDR        | Review / follow-up          |
-| **2** | Moderate NPDR    | Specialist triage           |
-| **3** | Severe NPDR      | Urgent specialist referral  |
-| **4** | Proliferative DR | Emergency specialist review |
-
-The prototype backend exposes severity, confidence, classification label, recommended action, and heatmap information.
-
----
-
-### 4. ⚡ Edge / Offline-First Vision
-
-Rural healthcare infrastructure cannot always assume reliable connectivity.
-
-The proposed RetinaScan-XAI architecture therefore follows an **offline-first approach**:
-
-```text
-              ┌─────────────────────┐
-              │   Rural PHC Device  │
-              └──────────┬──────────┘
-                         │
-                  Fundus Image
-                         │
-                         ▼
-              ┌─────────────────────┐
-              │ Image Quality Check │
-              └──────────┬──────────┘
-                         │
-                         ▼
-              ┌─────────────────────┐
-              │   AI DR Grading     │
-              └──────────┬──────────┘
-                         │
-                         ▼
-              ┌─────────────────────┐
-              │   XAI Evidence      │
-              └──────────┬──────────┘
-                         │
-                         ▼
-              ┌─────────────────────┐
-              │ Specialist Queue    │
-              └──────────┬──────────┘
-                         │
-                         ▼
-              ┌─────────────────────┐
-              │ Referral / Followup │
-              └─────────────────────┘
+```mermaid
+flowchart TB
+    subgraph PHC["🏥 Rural PHC · low-spec laptop · 100% offline"]
+        UI["<b>1 · React Web UI</b><br/>touch-friendly capture and review canvas"]
+        API["<b>2 · FastAPI middleware</b><br/>single-worker FIFO guard · ~3 GB RAM cap"]
+        ABDM["<b>3 · ABDM wrapper</b><br/>ABHA · FHIR R4 bundles"]
+        IQA["<b>4 · Clinical engine</b><br/>IQA + CLAHE"]
+        SEG["Segmentation<br/>Frangi · Top-hat · Active contours"]
+        CLS["Hybrid grading<br/>ResNet-50 + SVM/RF late fusion"]
+        XAI["Consensus XAI<br/>Grad-CAM + Occlusion + Saliency"]
+        DB[("<b>5 · Encrypted store</b><br/>SQLCipher")]
+        UI --> API --> IQA --> SEG --> CLS --> XAI
+        API --> ABDM
+        API --> DB
+    end
+    ABDM -. "opportunistic sync<br/>when internet returns" .-> GW["☁️ ABDM Gateway"]
+    GW --- DR["👩‍⚕️ Remote ophthalmologist"]
 ```
 
-The current prototype can operate without a trained model by using a controlled **mock fallback mode**, while the real deployment path supports loading the trained ResNet-50 model locally.
+### Patient journey
 
----
-
-# 🧬 AI / ML Pipeline
-
-The current ML implementation uses a **fine-tuned ResNet-50** model trained for five-class diabetic-retinopathy grading.
-
-### Training pipeline
-
-```text
-APTOS 2019 Dataset
-        │
-        ▼
-Data Loading
-        │
-        ▼
-Image Preprocessing
-        │
-        ├── Resize
-        ├── Random Crop
-        ├── Rotation
-        ├── Flip
-        ├── Color Jitter
-        └── Normalization
-        │
-        ▼
-ImageNet-pretrained ResNet-50
-        │
-        ▼
-Custom Classification Head
-        │
-        ▼
-5-Class DR Prediction
-        │
-        ▼
-Referable DR Analysis
-        │
-        ▼
-Evaluation Metrics
+```mermaid
+flowchart LR
+    A["🪪 Register<br/>ABHA verification"] --> B["📷 Capture<br/>fundus image"]
+    B --> C{"IQA<br/>focus · light · FOV"}
+    C -- "poor / discard" --> B
+    C -- "borderline" --> D["✨ Auto-enhance<br/>green-channel CLAHE"]
+    C -- "good" --> E
+    D --> E["🧠 Local inference<br/>ICDR grade 0–4"]
+    E --> F["🔥 Heatmap +<br/>lesion overlay"]
+    F --> G{"Referable?<br/>Grade 2 or higher"}
+    G -- "no" --> H["✅ Routine<br/>screening advice"]
+    G -- "yes" --> I["⏫ Priority queue"]
+    I --> J["👩‍⚕️ Specialist review<br/>under 60 s · accept or override"]
+    J --> K["📄 Referral slip<br/>FHIR R4 bundle"]
+    H --> L["🔄 Opportunistic<br/>ABDM sync"]
+    K --> L
 ```
 
-The training script uses class-weighted loss, AdamW optimization, cosine annealing, stratified train/validation splitting, and GPU acceleration when available.
+### Working prototype (what this repo runs today)
 
----
-
-# 📊 Model Evaluation
-
-The project includes a dedicated evaluation pipeline for the APTOS 2019 validation split.
-
-The evaluation script calculates:
-
-* Accuracy
-* Sensitivity / Recall
-* Specificity
-* PPV
-* NPV
-* F1 Score
-* AUC-ROC
-* Confusion Matrix
-* Per-class classification report
-
-For the project's **referable DR** evaluation:
-
-```text
-Positive  → ICDR Level 2 / 3 / 4
-Negative  → ICDR Level 0 / 1
+```mermaid
+sequenceDiagram
+    autonumber
+    participant HW as 🧑‍⚕️ Health worker
+    participant UI as ⚛️ React + Vite UI
+    participant API as 🐍 FastAPI
+    participant ML as 🧠 ResNet-50 + Grad-CAM
+    participant DR as 👩‍⚕️ Ophthalmologist
+    HW->>UI: Upload fundus image
+    UI->>API: POST /upload
+    API->>ML: run_inference (single-worker lock)
+    ML-->>API: grade, confidence, heatmap
+    API-->>UI: JSON + /images/heatmap_*.jpg
+    UI-->>HW: Result with explainable heatmap
+    UI-->>DR: Queue → Diagnostic canvas → Referral slip
 ```
 
-The evaluation script also searches for an operating threshold using **Youden's J statistic** and generates a machine-readable JSON evaluation report.
-
-> **Important:** The numerical performance targets shown in the SIH proposal are targets/benchmarks. Always use the generated evaluation report for the actual current model performance rather than assuming proposal targets have already been achieved.
+> If the model file is missing or inference fails, the API **degrades gracefully to pre-computed heatmaps** (mock mode). The demo never shows a raw error to the audience.
 
 ---
 
-# 🖥️ Prototype Workflow
+## 📊 Results
 
-The web prototype provides an end-to-end demonstration flow.
+Fine-tuned **ResNet-50** (ImageNet-pretrained) on **APTOS 2019**. Evaluation covers the held-out validation split of **733 images**, scored as *referable DR* (ICDR Grade 2, 3 or 4).
 
-### 01 — Intake
+| Metric | Result | SIH target | |
+|---|:---:|:---:|:---:|
+| **Sensitivity** | **97.65 %** | ≥ 90 % | ✅ |
+| **Specificity** | **89.20 %** | ≥ 85 % | ✅ |
+| AUC-ROC | 0.978 | — | ✅ |
+| PPV (precision) | 86.1 % | — | |
+| NPV | 98.2 % | — | |
+| F1 score | 0.915 | — | |
+| 5-class accuracy | 79.4 % | — | |
 
-Upload or select a retinal fundus image.
+Confusion matrix: **TP 291 · TN 388 · FP 47 · FN 7**. The operating threshold of **0.1162** was chosen with Youden's J index on the ROC curve, which maximises sensitivity + specificity. The model is deliberately tuned so that it **rarely misses a patient who needs a specialist**.
 
-### 02 — Quality Check
+<div align="center">
+<img src="ml_script/model_performance.png" alt="Model performance report: confusion matrix, ROC curve, metrics vs SIH targets" width="92%"/>
+<br/><sub>Full evaluation dashboard (<code>ml_script/model_performance.png</code>). Raw numbers are in <code>ml_script/evaluation_report.json</code>.</sub>
+</div>
 
-The workflow moves through an image-quality stage before presenting the result.
+### 🔥 Explainability: what the model looked at
 
-### 03 — AI Processing
+Every prediction comes with a heatmap on the fundus image. Warm colours mark the regions that pushed the decision.
 
-The backend performs inference using the trained model when available.
+<div align="center">
+<table>
+<tr>
+<th></th><th>Grade 0<br/><sub>No DR</sub></th><th>Grade 1<br/><sub>Mild</sub></th><th>Grade 2<br/><sub>Moderate</sub></th><th>Grade 3<br/><sub>Severe</sub></th><th>Grade 4<br/><sub>Proliferative</sub></th>
+</tr>
+<tr>
+<td><b>Input</b></td>
+<td><img src="ml_script/input_images/level_0_od.jpg" width="150"/></td>
+<td><img src="ml_script/input_images/level_1_od.jpg" width="150"/></td>
+<td><img src="ml_script/input_images/level_2_od.jpg" width="150"/></td>
+<td><img src="ml_script/input_images/level_3_od.jpg" width="150"/></td>
+<td><img src="ml_script/input_images/level_4_od.jpg" width="150"/></td>
+</tr>
+<tr>
+<td><b>Grad-CAM</b></td>
+<td><img src="ml_script/output_heatmaps/heatmap_0_od.jpg" width="150"/></td>
+<td><img src="ml_script/output_heatmaps/heatmap_1_od.jpg" width="150"/></td>
+<td><img src="ml_script/output_heatmaps/heatmap_2_od.jpg" width="150"/></td>
+<td><img src="ml_script/output_heatmaps/heatmap_3_od.jpg" width="150"/></td>
+<td><img src="ml_script/output_heatmaps/heatmap_4_od.jpg" width="150"/></td>
+</tr>
+<tr>
+<td><b>Action</b></td>
+<td><sub>Routine annual screening</sub></td>
+<td><sub>Review in 6–12 months</sub></td>
+<td><sub>Specialist triage required</sub></td>
+<td><sub>Urgent specialist referral</sub></td>
+<td><sub>Emergency laser / surgical review</sub></td>
+</tr>
+</table>
+</div>
 
-### 04 — Results
+### ⏱️ System capacity (Simulink / SimEvents model)
 
-The system presents:
+We modelled the whole screening network as a discrete-event simulation (Poisson patient arrivals, a resource pool of reviewers, and a sync queue). The goal was to prove the system does not collapse during peak surges.
 
-* DR severity
-* Classification
-* Confidence
-* Recommended action
-* XAI / heatmap evidence
+| Parameter | Value |
+|---|---|
+| Network scale | **100 rural PHCs**, ~100 patients/day/PHC on average, peaks up to 10,000/day |
+| Throughput | **100,000+ screenings / year** synced to ABHA |
+| Specialist ratio | **1 ophthalmologist : 8 PHCs**, ~30 cases/day each |
+| Review speed | **< 60 s / case**, average review wait **< 4.2 min** |
+| Latency budget | IQA < 1.5 s + XAI/PDF < 2.0 s, **total < 5.0 s** |
+| Field realities modelled | 24.9 % of the time offline, 6.6 % baseline recapture rate |
 
-### 05 — Specialist Queue
-
-Higher-risk cases can be prioritized for specialist review.
-
-### 06 — XAI Canvas
-
-The reviewer can inspect visual evidence and understand the model output.
-
-### 07 — Referral
-
-The workflow concludes with a referral-oriented decision path.
-
-The React application implements dedicated screens for Home, Upload, Quality Check, Processing, Results, Queue, Canvas, Referral, and Admin workflows.
-
----
-
-# 🏗️ System Architecture
-
-## Current Working Prototype
-
-```text
-┌───────────────────────────────────────────────┐
-│                 React Frontend                │
-│                                               │
-│ Home → Upload → Quality → Results → Queue    │
-│                     ↓                         │
-│              XAI Canvas → Referral            │
-└──────────────────────┬────────────────────────┘
-                       │
-                       │ REST API
-                       ▼
-┌───────────────────────────────────────────────┐
-│               FastAPI Backend                  │
-│                                               │
-│ /upload                                       │
-│ /health                                       │
-│ /eval-report                                  │
-│ /images                                       │
-└──────────────────────┬────────────────────────┘
-                       │
-                       ▼
-┌───────────────────────────────────────────────┐
-│              PyTorch / ResNet-50              │
-│                                               │
-│  Real Model ──────────────► Prediction        │
-│       │                                         │
-│       └── unavailable ────► Mock Fallback      │
-└───────────────────────────────────────────────┘
-```
-
-The FastAPI backend automatically detects whether `retinascan_resnet50.pth` is available. If it is unavailable, the application enters a controlled mock mode instead of crashing.
+🔗 [Simulink workflow & capacity simulation (appendix)](https://drive.google.com/file/d/1o0yY94iZkga5ATJJvLCnZBHUwtMZQmxD/view?usp=drive_link)
 
 ---
 
-# 🧩 Technology Stack
+## 🖥️ App Walkthrough
 
-### Frontend
+A guided flow that follows the real PHC workflow: **Home → Capture → Quality check → Processing → Results → Queue → Diagnostic canvas → Referral slip.** The screens below are our design prototypes.
 
-| Technology      | Purpose                    |
-| --------------- | -------------------------- |
-| ⚛️ React 19     | Interactive user interface |
-| ⚡ Vite 8        | Frontend development/build |
-| 🎨 Tailwind CSS | UI styling                 |
-| JavaScript      | Application logic          |
-
-The frontend package uses React 19, Vite, Tailwind CSS, and related build tooling.
-
-### Backend
-
-| Technology       | Purpose                |
-| ---------------- | ---------------------- |
-| 🐍 Python        | Backend / ML ecosystem |
-| ⚡ FastAPI        | REST API               |
-| Uvicorn          | ASGI server            |
-| Python Multipart | Image uploads          |
-| OpenCV           | Image processing       |
-| Pillow           | Image handling         |
-
-The backend dependencies include FastAPI, Uvicorn, PyTorch, TorchVision, Pillow, OpenCV, Pandas, scikit-learn, NumPy, and tqdm.
-
-### AI / ML
-
-| Technology     | Purpose                   |
-| -------------- | ------------------------- |
-| 🧠 ResNet-50   | DR image classification   |
-| 🔥 PyTorch     | Deep-learning framework   |
-| TorchVision    | Model and image utilities |
-| scikit-learn   | Evaluation metrics        |
-| NumPy / Pandas | Data processing           |
+<table>
+<tr>
+<td align="center" width="33%"><img src="Frontend/stitch_retinascan_demo_prototype/1._home_retinascan_ai/screen.png" alt="Home"/><br/><b>1 · Home</b><br/><sub>Offline status, sample patient</sub></td>
+<td align="center" width="33%"><img src="Frontend/stitch_retinascan_demo_prototype/screen_a_capture_upload_retinascan_ai/screen.png" alt="Capture and upload"/><br/><b>2 · Capture / Upload</b><br/><sub>Fundus image intake</sub></td>
+<td align="center" width="33%"><img src="Frontend/stitch_retinascan_demo_prototype/screen_b_processing_inference_retinascan_ai/screen.png" alt="Processing"/><br/><b>3 · Processing</b><br/><sub>Quality check and inference</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="Frontend/stitch_retinascan_demo_prototype/2._results_diagnosis/screen.png" alt="Results"/><br/><b>4 · Results</b><br/><sub>ICDR grade, confidence, heatmap</sub></td>
+<td align="center"><img src="Frontend/stitch_retinascan_demo_prototype/3._queue_review_list/screen.png" alt="Queue"/><br/><b>5 · Specialist queue</b><br/><sub>Priority-sorted review list</sub></td>
+<td align="center"><img src="Frontend/stitch_retinascan_demo_prototype/4._canvas_diagnostic_viewer/screen.png" alt="Diagnostic canvas"/><br/><b>6 · Diagnostic canvas</b><br/><sub>Lesion pins, accept / override</sub></td>
+</tr>
+<tr>
+<td align="center" colspan="3"><img src="Frontend/stitch_retinascan_demo_prototype/5._referral_clinical_slip/screen.png" alt="Referral slip" width="33%"/><br/><b>7 · Referral clinical slip</b><br/><sub>Printable slip with ABHA ID and FHIR footer</sub></td>
+</tr>
+</table>
 
 ---
 
-# 📁 Repository Structure
+## 🧰 Tech Stack
 
-```text
-SIH26demo/
-│
-├── Backend/
-│   ├── main.py
-│   ├── requirements.txt
-│   ├── inference.py
-│   └── retinascan_resnet50.pth
-│
-├── Frontend/
-│   └── retinascan-app/
-│       ├── src/
-│       │   ├── components/
-│       │   ├── App.jsx
-│       │   ├── config.js
-│       │   └── data.js
-│       ├── public/
-│       │   └── images/
-│       ├── package.json
-│       └── vite.config.js
-│
-├── ml_script/
-│   ├── train_model.py
-│   ├── evaluate_model.py
-│   └── evaluation_report.json
-│
-├── render.yaml
-├── install_deps.bat
-├── start_backend.bat
-├── start_frontend.bat
-├── train_model.bat
-├── evaluate_model.bat
-└── README.md
-```
+| Layer | Technology |
+|---|---|
+| **Frontend** | React 19 · Vite 8 · Tailwind CSS 4 · Oxlint |
+| **Backend** | Python · FastAPI · Uvicorn · async single-worker inference lock |
+| **ML / XAI** | PyTorch + torchvision (ResNet-50) · Grad-CAM · OpenCV · scikit-learn · pandas |
+| **Clinical toolkit** | MATLAB: Image Processing, Computer Vision, Medical Imaging, Deep Learning, Statistics toolboxes, Report Generator, Compiler SDK (free MCR runtime) |
+| **Interoperability** | ABDM (ABHA) · HL7 FHIR R4 · NRCeS ABDM FHIR profiles |
+| **Simulation** | Simulink + SimEvents capacity model |
+| **Deployment** | Render (`render.yaml`: FastAPI web service + static React site) |
+
+**Model recipe:** ImageNet-pretrained ResNet-50 with a custom head (`Dropout 0.4 → Linear 512 → ReLU → Dropout 0.3 → Linear 5`). Inputs are 224×224. Training uses AdamW (lr 1e-4, weight decay 1e-4) with a cosine schedule, a class-weighted cross-entropy loss, and a stratified 80/20 split (seed 42).
 
 ---
 
-# 🚀 Getting Started
+## 🚀 Quick Start
 
-## Prerequisites
+**Prerequisites:** Python 3.10+ and Node.js 20.19+ (required by Vite 8).
 
-Install:
-
-* **Python 3.10+**
-* **Node.js 18+**
-* **npm**
-* Git
-
-For model training, a CUDA-capable NVIDIA GPU is recommended but not mandatory.
-
----
-
-## 1. Clone the Repository
+### 1 · Clone
 
 ```bash
 git clone https://github.com/LakshyMaheshwari/SIH26demo.git
 cd SIH26demo
 ```
 
----
-
-## 2. Setup Backend
+### 2 · Start the backend (FastAPI)
 
 ```bash
 cd Backend
-
 python -m venv venv
-```
-
-### Windows
-
-```bash
-venv\Scripts\activate
-```
-
-### Linux / macOS
-
-```bash
-source venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Start the API:
-
-```bash
+source venv/bin/activate          # Windows: venv\Scripts\activate
+pip install -r requirements.txt   # CPU-only PyTorch, no GPU needed
 uvicorn main:app --reload --port 8000
 ```
 
-Backend:
+Open <http://localhost:8000/health> to check which mode you are in.
 
-```text
-http://localhost:8000
-```
-
-Health check:
-
-```text
-http://localhost:8000/health
-```
-
----
-
-## 3. Setup Frontend
-
-Open another terminal:
+### 3 · Start the frontend (React + Vite)
 
 ```bash
 cd Frontend/retinascan-app
@@ -489,387 +312,210 @@ npm install
 npm run dev
 ```
 
-Open:
+Open the URL Vite prints (usually <http://localhost:5173>). The app talks to `http://localhost:8000` by default. To point it elsewhere, set `VITE_API_URL`.
 
-```text
-http://localhost:5173
-```
+### 🔀 Two modes: Mock vs Real inference
 
-The frontend reads the backend URL from `VITE_API_URL`. If it is not provided, the local default is:
+| Mode | When | What you get |
+|---|---|---|
+| 🎭 **Mock** *(default)* | `Backend/retinascan_resnet50.pth` is **not** present | Pre-computed heatmaps for all 5 grades. The grade is picked from the uploaded filename (`level_2_*`, `img_3_*`, `demo_1_*`, and so on). Instant and reliable for demos |
+| 🧠 **Real** | The weights file **is** present | Live ResNet-50 prediction and a fresh Grad-CAM heatmap for every upload |
 
-```text
-http://localhost:8000
-```
+> Model weights are not committed (`*.pth` is git-ignored). To enable real mode, train the model as shown below and copy `ml_script/retinascan_resnet50.pth` into `Backend/`.
 
----
-
-# 🤖 Running the Real AI Model
-
-Place the trained model file here:
-
-```text
-Backend/
-└── retinascan_resnet50.pth
-```
-
-The backend checks for this file during startup.
-
-### Model available
-
-```text
-Real inference enabled
-```
-
-### Model unavailable
-
-```text
-Mock mode enabled
-```
-
-This makes the demonstration resilient even when the large model artifact is not included in the deployment environment.
-
----
-
-# 🧪 Training the Model
-
-Download and prepare the **APTOS 2019 Blindness Detection** dataset.
-
-Expected structure:
-
-```text
-aptos2019-blindness-detection/
-│
-├── train.csv
-└── train_images/
-    ├── image_001.png
-    ├── image_002.png
-    └── ...
-```
-
-Then update the dataset path in:
-
-```text
-ml_script/train_model.py
-```
-
-Run:
+### 🎓 Train and evaluate the model (optional)
 
 ```bash
-cd ml_script
-python train_model.py
+pip install torch torchvision pillow opencv-python pandas scikit-learn tqdm grad-cam matplotlib
+# Edit DATASET_ROOT in ml_script/train_model.py to point at your APTOS 2019 download
+python ml_script/train_model.py          # trains and saves retinascan_resnet50.pth
+python ml_script/evaluate_model.py       # writes evaluation_report.json (sensitivity / specificity)
+python ml_script/visualise_metrics.py    # regenerates model_performance.png
+python ml_script/messidor_test.py        # cross-dataset check on Messidor-2
+python ml_script/generate_all_heatmaps.py  # Grad-CAM gallery from ml_script/input_images
+cp ml_script/retinascan_resnet50.pth Backend/
 ```
 
-The training pipeline:
+> 🪟 **Windows shortcuts:** `install_deps.bat`, `train_model.bat`, `evaluate_model.bat`, `messidor_test.bat`, `start_backend.bat` and `start_frontend.bat` wrap these steps. They contain a hard-coded Python path in the `PY` variable, so edit it to match your machine first.
 
-* Splits the dataset into training and validation sets
-* Applies image augmentation
-* Uses ImageNet-pretrained ResNet-50
-* Uses class-weighted cross entropy
-* Trains for the configured number of epochs
-* Saves the best model
-* Generates evaluation metrics
+### ☁️ Deploy on Render
 
-The script currently uses a 20% validation split and five output classes.
+`render.yaml` provisions both services as a blueprint: a **Python web service** (`Backend/`, `uvicorn main:app`) and a **static site** (`Frontend/retinascan-app/`, `npm run build`). `VITE_API_URL` is wired to the backend host automatically. On Render's free plan the backend sleeps when idle, so the first request after a while can take a short time to wake it up.
+
+### 🎬 Demo tips for presenters
+
+- **`Ctrl + Shift + R`** resets the app to the Home screen and a clean state.
+- Use the star preset patient **"Geeta S. ★"** (Moderate NPDR) for the full end-to-end story.
+- Sample fundus images for every grade are in `ml_script/input_images/` (`level_{0-4}_{od|os}.jpg`).
 
 ---
 
-# 📈 Evaluating the Model
+## 🔌 API Reference
 
-After training:
+Base URL: `http://localhost:8000`. Interactive docs are at `/docs` (Swagger UI).
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/` | Service info, current mode and available endpoints |
+| `GET` | `/health` | `{ status, model_loaded, inference_mode }` |
+| `POST` | `/upload` | Multipart upload (`file`). Returns the DR grade, confidence and heatmap URL |
+| `GET` | `/eval-report` | Serves `ml_script/evaluation_report.json` (sensitivity / specificity proof) |
+| `GET` | `/images/*` | Static fundus images and generated heatmaps |
 
 ```bash
-cd ml_script
-python evaluate_model.py
+curl -F "file=@ml_script/input_images/level_2_od.jpg" http://localhost:8000/upload
 ```
 
-The evaluation report includes:
+```jsonc
+{
+  "severity": 2,                              // ICDR grade 0–4
+  "confidence": 96.4,                         // %
+  "label": "Moderate NPDR",
+  "action": "Specialist Triage Required",
+  "heatmap_url": "/images/heatmap_live_ab12cd34.jpg",
+  "all_probs": [0.01, 0.02, 0.96, 0.01, 0.0], // real mode only
+  "mode": "real"                              // "real" | "mock" | "fallback"
+}
+```
+
+**ICDR grade → recommended action**
+
+| Grade | Label | Action |
+|:---:|---|---|
+| 0 | No Apparent DR | Routine annual screening |
+| 1 | Mild NPDR | Review in 6–12 months |
+| 2 | Moderate NPDR | **Specialist triage required** |
+| 3 | Severe NPDR | **Urgent specialist referral** |
+| 4 | Proliferative DR | **Emergency laser / surgical review** |
+
+---
+
+## 🗂️ Repository Structure
 
 ```text
-Sensitivity
-Specificity
-PPV
-NPV
-F1 Score
-AUC-ROC
-Accuracy
-Confusion Matrix
-Per-class Report
+SIH26demo/
+├── Backend/                      # FastAPI service
+│   ├── main.py                   #   API, CORS, mock fallback, inference lock
+│   ├── inference.py              #   ResNet-50 loader + Grad-CAM + heatmap overlay
+│   └── requirements.txt
+├── Frontend/
+│   ├── retinascan-app/           # React 19 + Vite + Tailwind app
+│   │   ├── src/components/       #   Home · Upload · QualityCheck · Processing ·
+│   │   │                         #   Results · Queue · Canvas · Referral · Admin
+│   │   ├── src/data.js           #   demo patients, lesion types, severity colours
+│   │   └── public/images/        #   fundus samples + pre-computed heatmaps
+│   └── stitch_retinascan_demo_prototype/   # design-system prototypes (screens + DESIGN.md)
+├── ml_script/
+│   ├── train_model.py            # ResNet-50 fine-tuning on APTOS 2019
+│   ├── evaluate_model.py         # sensitivity / specificity / AUC → evaluation_report.json
+│   ├── messidor_test.py          # cross-dataset test → cross_dataset_report.json
+│   ├── generate_all_heatmaps.py  # Grad-CAM gallery
+│   ├── visualise_metrics.py      # → model_performance.png
+│   ├── input_images/ · output_heatmaps/
+│   └── matlab/                   # MATLAB clinical toolkit
+│       ├── preprocess_retina.m   #   green channel · CLAHE · Frangi vesselness · normalisation
+│       ├── segment_lesions.m     #   microaneurysms · haemorrhages · exudates
+│       └── generate_report.m     #   PDF screening report
+├── render.yaml                   # one-click Render blueprint
+└── *.bat                         # Windows helper scripts
 ```
 
-The resulting report can be served through the backend's:
+---
 
-```text
-/eval-report
-```
+## 🌍 Impact
 
-endpoint.
+**Who it serves:** 🏛️ *Institutional buyers* (State Health Missions, NHM, District Health Societies) · 🧑‍⚕️ *Operational users* (ASHAs / ANMs, remote ophthalmologists, administrators) · 🧑‍🌾 *Beneficiaries* (rural diabetic patients getting last-mile screening).
+
+| Benefit | Impact |
+|---|---|
+| 💰 **Patient savings** | Saves **₹370** and eliminates **80 km** of round-trip travel per screening |
+| ⏱️ **ASHA time** | **3+ hours / week** saved per ASHA (baseline documentation: 4.4 h / week), via automated register entries, ABHA sync and instant PDF reports |
+| 🌱 **Environment** | **2.89 kg CO₂** avoided per screening through decentralised diagnostics |
+| 👁️ **Blindness prevention** | Early referral targets the **90 %** of vision loss that is preventable |
+| ⚖️ **Healthcare equity** | Narrows the rural–urban gap with ABHA-linked longitudinal records |
+| 🧾 **Specialist workload** | Cuts review effort from ~5 min to **under 60 s** per case with Grade 2+ auto-prioritisation |
+| 🏷️ **Zero lock-in** | No cloud hosting, API subscription or cellular data cost. Compiled MATLAB runs on the free MCR runtime |
+
+### ✅ Feasibility at a glance
+
+| | Challenge | Our mitigation |
+|---|---|---|
+| 🔧 **Technical** | Poor images from low-cost cameras cause false predictions | Automated IQA with CLAHE enhancement or a guided recapture |
+| 💸 **Financial** | Proprietary medical AI means high licence and hardware costs | Offline edge execution on existing laptops, with no GPU and no cloud fees |
+| 🏥 **Operational** | Health workers and remote doctors are overloaded | Large-touch-target UI, a one-screen validation canvas, and a Simulink-optimised staffing model |
+| 🤝 **Social** | Doctors distrust "black-box" AI | Transparent heatmaps with doctor override and an audit trail |
 
 ---
 
-# ☁️ Deployment
+## 🧭 Roadmap & Honest Notes
 
-The project includes a `render.yaml` configuration for deploying:
+We want this README to be as honest as the demo is polished. Here is where each part of the vision stands in **this repository today**.
 
-```text
-React Frontend
-      +
-FastAPI Backend
-      ↓
-Render
-```
+| Component | Status | Notes |
+|---|:---:|---|
+| ResNet-50 DR grading (0–4) | ✅ Working | Trained on APTOS 2019, with live CPU inference in `Backend/` |
+| Grad-CAM explainability | ✅ Working | Generated per upload and shown in Results and Canvas |
+| Referable-DR triage metrics | ✅ Working | 97.65 % sensitivity, 89.20 % specificity on the held-out validation split |
+| FastAPI + single-worker guard | ✅ Working | Async lock serialises inference to cap memory |
+| Mock / fallback mode | ✅ Working | Keeps the demo robust without the weights file |
+| MATLAB preprocessing, lesion segmentation, PDF report | ✅ Working | Standalone scripts in `ml_script/matlab/` |
+| IQA scoring screen | 🎭 Demo-simulated | The UI animates the focus / illumination / FOV checks with representative scores |
+| Specialist queue, lesion pins, referral slip | 🎭 Demo-simulated | Driven by sample patient data in `src/data.js` |
+| ABHA verification and FHIR R4 bundle | 🎭 UI mock | The screens show the flow, and the live FHIR / ABDM gateway integration is planned |
+| Occlusion + Saliency consensus XAI | 🛣️ Planned | Prototype currently ships Grad-CAM only |
+| SVM / Random-Forest late-fusion ensemble | 🛣️ Planned | Prototype currently uses the ResNet-50 classifier alone |
+| Encrypted SQLite (SQLCipher) offline store and LWW sync | 🛣️ Planned | Designed in the architecture, not yet in the repo |
+| Compiled MATLAB engine behind FastAPI | 🛣️ Planned | Prototype runs the Python inference path |
 
-The backend is deployed as a Python web service and the frontend as a static site. The frontend receives the backend host through the `VITE_API_URL` environment variable.
+**Known limitations**
 
-### 🌐 Live Prototype
+- **Domain shift.** Our own Messidor-2 cross-dataset run (`cross_dataset_report.json`) shows the APTOS-trained model generalises **poorly** to that dataset. It under-calls referable DR versus published prevalence, and Messidor-2 has no per-image grade labels, so the comparison is dataset-level only. The headline metrics above come from a held-out split of **APTOS**, which is the same source as the training data, and are **not** an external validation.
+- **Next steps:** fine-tune on IDRiD and Messidor-2, add the IQA-driven normalisation to the live pipeline, calibrate confidence on external data, and run a prospective pilot with PHC clinicians.
 
-**https://sih26demobigo.onrender.com**
-
----
-
-# 🔬 Datasets
-
-The project references publicly available retinal datasets for model development and evaluation.
-
-### APTOS 2019 Blindness Detection
-
-Primary dataset used by the current training/evaluation implementation.
-
-https://www.kaggle.com/competitions/aptos2019-blindness-detection
-
-### Indian Diabetic Retinopathy Image Dataset — IDRiD
-
-https://ieee-dataport.org/open-access/indian-diabetic-retinopathy-image-dataset-idrid
-
-### Messidor-2
-
-https://www.adcis.net/en/third-party/messidor2/
-
-> Dataset licenses, terms of use, and redistribution restrictions must be respected when using these datasets.
+> ⚠️ **Disclaimer:** RetinaScan-XAI is a research and hackathon prototype. It is **not a certified medical device** and must not be used for real clinical diagnosis. Every AI output requires review by a qualified ophthalmologist.
 
 ---
 
-# 🧠 Proposed SIH Architecture
+## 🏆 Team
 
-The broader SIH solution extends beyond the current prototype.
+<div align="center">
 
-The proposed production-oriented architecture consists of:
+| | |
+|---|---|
+| **Team** | **TheBIG(O)** |
+| **Team ID** | 173175 |
+| **Problem Statement** | SIH26038 · *Explainable AI for Diabetic Retinopathy Screening in Rural India* |
+| **Theme / Category** | MedTech / Software |
+| **Repository maintainer** | [Lakshy Maheshwari](https://github.com/LakshyMaheshwari) |
 
-```text
-                 Patient Registration
-                         │
-                         ▼
-                Fundus Image Capture
-                         │
-                         ▼
-                Automated IQA Gate
-                         │
-                         ▼
-              Offline AI Clinical Core
-                         │
-                ┌────────┴────────┐
-                ▼                 ▼
-          DR Classification     XAI
-                │                 │
-                └────────┬────────┘
-                         ▼
-                 Risk Prioritization
-                         │
-                         ▼
-                Specialist Review
-                         │
-                ┌────────┴────────┐
-                ▼                 ▼
-             Accept            Override
-                │                 │
-                └────────┬────────┘
-                         ▼
-                  Referral Decision
-                         │
-                         ▼
-                Health Record Sync
-```
-
-The SIH proposal additionally targets:
-
-* Offline-first rural deployment
-* Specialist tele-triage
-* ABHA-linked workflows
-* FHIR-based interoperability
-* Encrypted local storage
-* Opportunistic synchronization
-* Queue-based specialist prioritization
-* Low-resource hardware compatibility
-
-These represent the **proposed solution architecture**, while this repository focuses primarily on the working software prototype and AI inference flow.
+</div>
 
 ---
 
-# 🚀 Key Innovation Areas
+## 📚 References & Data
 
-### 🔍 Consensus Explainability
+**Datasets:** [APTOS 2019 Blindness Detection](https://www.kaggle.com/competitions/aptos2019-blindness-detection/data) · [IDRiD (Indian Diabetic Retinopathy Image Dataset)](https://ieee-dataport.org/open-access/indian-diabetic-retinopathy-image-dataset-idrid) · [Messidor-2](https://www.adcis.net/en/third-party/messidor2/)
 
-Multiple explanation techniques can be combined to reduce dependence on a single saliency method.
+**Research and standards**
 
-### 📴 Offline-First Design
+1. Chauhan A, et al. *Reach and implementation of human and AI-assisted diabetic retinopathy screening models in primary healthcare settings in India.* Scientific Reports 2025;15:41355. [Link](https://www.nature.com/articles/s41598-025-25402-9)
+2. Duggal M, et al. *Real-world evaluation of AI-driven diabetic retinopathy screening in public health settings.* International Ophthalmology, 2025/2026. [Link](https://link.springer.com/article/10.1007/s10792-026-04171-y)
+3. *An inherently interpretable AI model improves screening speed and accuracy for early diabetic retinopathy.* PLOS Digital Health / medRxiv, 2024–2025. [Link](https://pmc.ncbi.nlm.nih.gov/articles/PMC12068651/)
+4. Karthik A, Pandiyaraju V, Mynampati S. *Explainable AI for Diabetic Retinopathy Detection Using Deep Learning with Attention Mechanisms and Fuzzy Logic-Based Interpretability.* arXiv:2511.16294, 2025. [Link](https://arxiv.org/pdf/2511.16294)
+5. Guo T, et al. *Refined image quality assessment for color fundus photography based on deep learning.* DIGITAL HEALTH, 2024. [Link](https://doi.org/10.1177/20552076231207582)
+6. National Health Authority. *Guidelines for HIPs and HIUs, HRPs and PHR Apps.* Ayushman Bharat Digital Mission, 2022. [PDF](https://abdm.gov.in/strapicms/uploads/HIP_HIU_Guidelines_f85df336ec.pdf)
+7. NRCeS. *FHIR Implementation Guide for ABDM: DiagnosticReport & Observation Profiles (v2.0.1).* National Health Authority, 2021. [Link](https://nrces.in/ndhm/fhir/r4/2.0.1/downloads.html)
 
-Screening should continue even when internet connectivity is unavailable.
-
-### 🧑‍⚕️ Human-in-the-Loop
-
-AI supports screening; specialists remain responsible for clinical validation and referral decisions.
-
-### 📷 Quality-Aware AI
-
-The system should avoid blindly processing unusable retinal images.
-
-### ⚡ Fast Triage
-
-Higher-risk cases can be prioritized for specialist review.
-
-### 🏥 Rural-First Engineering
-
-The solution is designed around real-world PHC constraints rather than assuming high-end hospital infrastructure.
-
----
-
-# 📊 Proposed Impact
-
-RetinaScan-XAI aims to contribute to:
-
-| Area                      | Expected Impact                                          |
-| ------------------------- | -------------------------------------------------------- |
-| 👁️ Early Detection       | Identify patients requiring specialist attention earlier |
-| 🏥 Rural Healthcare       | Bring screening closer to underserved communities        |
-| 🧑‍⚕️ Specialist Workload | Prioritize higher-risk cases                             |
-| 🧠 Clinical Trust         | Provide visual AI evidence                               |
-| 📡 Connectivity           | Continue core screening during outages                   |
-| 💰 Patient Costs          | Reduce unnecessary travel for preliminary screening      |
-| 📈 Scalability            | Enable standardized screening workflows across PHCs      |
-
-The SIH proposal targets large-scale screening capacity and rapid specialist review while keeping the deployment model suitable for rural healthcare environments.
-
----
-
-# ⚠️ Medical Disclaimer
-
-**RetinaScan-XAI is a Smart India Hackathon prototype and research/decision-support system.**
-
-It is **not a replacement for a qualified ophthalmologist or clinical diagnosis**.
-
-AI predictions may contain errors. All screening results, referrals, and treatment decisions must be reviewed and authorized by an appropriately qualified healthcare professional.
-
-This prototype should not be used to make unsupervised medical decisions on real patients.
-
----
-
-# 🔐 Security & Privacy Considerations
-
-A production deployment should include:
-
-* Encryption of patient data at rest
-* Secure authentication
-* Role-based access control
-* Audit logging
-* Secure API communication
-* Minimum necessary patient data collection
-* Secure image storage
-* Consent-aware health-data workflows
-* Appropriate healthcare and government compliance
-
-The SIH architecture proposes encrypted local storage and standards-based health-data interoperability as part of the larger solution.
-
----
-
-# 🛣️ Roadmap
-
-### ✅ Prototype
-
-* [x] React-based screening interface
-* [x] FastAPI backend
-* [x] Fundus image upload
-* [x] Five-level DR classification
-* [x] ResNet-50 inference pipeline
-* [x] Mock fallback mode
-* [x] Results dashboard
-* [x] Specialist queue workflow
-* [x] XAI visualization workflow
-* [x] Referral workflow
-* [x] Model evaluation pipeline
-* [x] Render deployment configuration
-
-### 🔄 Next Phase
-
-* [ ] Production-grade image quality assessment
-* [ ] Multi-method XAI consensus
-* [ ] Robust lesion localization
-* [ ] Clinical validation with ophthalmologists
-* [ ] Better low-resource optimization
-* [ ] Secure authentication and RBAC
-* [ ] Encrypted local patient database
-* [ ] FHIR R4 integration
-* [ ] ABHA / ABDM integration
-* [ ] Offline synchronization
-* [ ] Real-world PHC pilot
-* [ ] Prospective clinical evaluation
-
----
-
-# 📚 Research & References
-
-1. Chauhan A. et al. *Reach and implementation of human and AI-assisted diabetic retinopathy screening models in primary healthcare settings in India.* Scientific Reports, 2025.
-
-2. Duggal M. et al. *Real-world evaluation of AI-driven diabetic retinopathy screening in public health settings: validation and implementation study.* International Ophthalmology, 2025/2026.
-
-3. *An inherently interpretable AI model improves screening speed and accuracy for early diabetic retinopathy.* PLOS Digital Health / medRxiv.
-
-4. Karthik A., Pandiyaraju V., Mynampati S. *Explainable AI for Diabetic Retinopathy Detection Using Deep Learning with Attention Mechanisms and Fuzzy Logic-Based Interpretability.* arXiv, 2025.
-
-5. Guo T. et al. *Refined image quality assessment for color fundus photography based on deep learning.* DIGITAL HEALTH, 2024.
-
-6. National Health Authority. *Guidelines for Health Information Providers and Health Information Users.* Ayushman Bharat Digital Mission, Government of India.
-
-7. National Resource Centre for EHR Standards. *FHIR Implementation Guide for ABDM — DiagnosticReport & Observation Profiles.*
-
----
-
-# 🎥 Demo & Resources
-
-### 🚀 Live Demo
-
-**https://sih26demobigo.onrender.com**
-
-### 💻 Source Code
-
-**https://github.com/LakshyMaheshwari/SIH26demo**
-
-### 🎯 SIH Problem Statement
-
-**SIH26038 — Explainable AI for Diabetic Retinopathy Screening in Rural India**
-
----
-
-# 👥 Team TheBIG(O)
-
-### Smart India Hackathon 2026
-
-**Team ID:** 173175
-
-**Project:** RetinaScan-XAI
-
-**Theme:** MedTech
+📎 [Appendix: Healthcare Economics](https://drive.google.com/file/d/1VNoBBwvH3vQcLc6dvWKc4hfIXP-1liOd/view?usp=drive_link) · 📎 [Appendix: Simulink Workflow](https://drive.google.com/file/d/1o0yY94iZkga5ATJJvLCnZBHUwtMZQmxD/view?usp=drive_link)
 
 ---
 
 <div align="center">
 
-## 👁️ From Black-Box Predictions to Explainable Screening
+**Built with ❤️ for rural India by TheBIG(O) · Smart India Hackathon 2026**
 
-### **RetinaScan-XAI**
+*Because no one should lose their sight for lack of a screening.*
 
-**AI-assisted • Explainable • Offline-first • Rural-ready**
-
-<br/>
-
-⭐ If you find this project interesting, consider giving the repository a star!
+<sub>⭐ If this project resonates with you, consider starring the repo.</sub>
 
 </div>
